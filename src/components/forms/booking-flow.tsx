@@ -227,13 +227,13 @@ export function BookingFlow() {
 
       {/* Progress Steps Header */}
       <div className="mb-8" aria-label="Booking steps">
-        <div className="flex items-center justify-between text-xs font-mono mb-3">
+        <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono mb-3">
           <span className={cn(step >= 1 ? 'text-green' : 'text-text-dim')}>01. Date</span>
-          <span className="h-px w-8 bg-border" />
+          <span className="h-px w-3 sm:w-8 bg-border" />
           <span className={cn(step >= 2 ? 'text-green' : 'text-text-dim')}>02. Time</span>
-          <span className="h-px w-8 bg-border" />
+          <span className="h-px w-3 sm:w-8 bg-border" />
           <span className={cn(step >= 3 ? 'text-green' : 'text-text-dim')}>03. Details</span>
-          <span className="h-px w-8 bg-border" />
+          <span className="h-px w-3 sm:w-8 bg-border" />
           <span className={cn(step >= 4 ? 'text-green' : 'text-text-dim')}>04. Confirm</span>
         </div>
         <div className="h-1.5 w-full bg-surface rounded-full overflow-hidden">

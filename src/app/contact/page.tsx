@@ -96,12 +96,12 @@ export default function ContactPage() {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <Phone className="w-5 h-5 text-green mt-0.5 shrink-0" />
+                    <Phone className="w-5 h-5 text-green mt-2.5 shrink-0" />
                     <div>
                       <div className="font-semibold text-text">Direct Phone</div>
                       <a
                         href={`tel:${BUSINESS_INFO.phone}`}
-                        className="text-xs text-text hover:text-green mt-1 block"
+                        className="text-xs text-text hover:text-green mt-0.5 inline-flex items-center min-h-[44px]"
                       >
                         {BUSINESS_INFO.phoneFormatted}
                       </a>
@@ -109,12 +109,12 @@ export default function ContactPage() {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <MessageCircle className="w-5 h-5 text-green mt-0.5 shrink-0" />
+                    <MessageCircle className="w-5 h-5 text-green mt-2.5 shrink-0" />
                     <div>
                       <div className="font-semibold text-text">WhatsApp Inquiries</div>
                       <a
                         href={BUSINESS_INFO.whatsappUrl}
-                        className="text-xs text-green hover:underline mt-1 block"
+                        className="text-xs text-green hover:underline mt-0.5 inline-flex items-center min-h-[44px]"
                       >
                         Start WhatsApp Chat (+91 88838 38363)
                       </a>

@@ -109,17 +109,17 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
               <span className="w-1.5 h-1.5 rounded-full bg-green" />
               <span>{service.title}</span>
             </div>
-            <nav className="flex items-center gap-6 text-xs text-text-muted font-body">
-              <a href="#what-you-get" className="hover:text-text transition-colors">
+            <nav className="flex items-center gap-4 text-xs text-text-muted font-body">
+              <a href="#what-you-get" className="hover:text-text transition-colors min-h-[44px] px-2 flex items-center">
                 What You Get
               </a>
-              <a href="#who-it-is-for" className="hover:text-text transition-colors">
+              <a href="#who-it-is-for" className="hover:text-text transition-colors min-h-[44px] px-2 flex items-center">
                 Who It Is For
               </a>
-              <a href="#process" className="hover:text-text transition-colors">
+              <a href="#process" className="hover:text-text transition-colors min-h-[44px] px-2 flex items-center">
                 Process
               </a>
-              <a href="#faq" className="hover:text-text transition-colors">
+              <a href="#faq" className="hover:text-text transition-colors min-h-[44px] min-w-[44px] justify-center flex items-center">
                 FAQ
               </a>
               <Button href={`/book-consultation?service=${service.key}`} size="sm">
@@ -143,12 +143,12 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6">
               {/* Breadcrumb text */}
-              <nav aria-label="Breadcrumb" className="text-xs text-text-dim flex items-center gap-2 font-mono">
-                <Link href="/" className="hover:text-text">Home</Link>
+              <nav aria-label="Breadcrumb" className="text-xs text-text-dim flex items-center gap-1 font-mono">
+                <Link href="/" className="hover:text-text min-h-[44px] min-w-[44px] justify-center flex items-center">Home</Link>
                 <span>/</span>
-                <Link href="/services" className="hover:text-text">Services</Link>
+                <Link href="/services" className="hover:text-text min-h-[44px] px-2 flex items-center">Services</Link>
                 <span>/</span>
-                <span className="text-green">{service.title}</span>
+                <span className="text-green min-h-[44px] px-2 flex items-center">{service.title}</span>
               </nav>
 
               <Eyebrow pill>{service.eyebrow}</Eyebrow>
@@ -327,7 +327,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
                 <p className="text-xs text-text-muted">Need a fast answer or custom scope?</p>
                 <a
                   href="/whatsapp"
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-green hover:underline"
+                  className="inline-flex items-center justify-center gap-2 text-xs font-semibold text-green hover:underline min-h-[44px] w-full"
                 >
                   <span>Chat directly on WhatsApp →</span>
                 </a>
@@ -358,7 +358,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
                 </div>
                 <Link
                   href={`/services/${rel.slug}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-green hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-green hover:underline min-h-[44px]"
                 >
                   <span>View Details</span>
                   <ArrowRight className="w-3.5 h-3.5" />

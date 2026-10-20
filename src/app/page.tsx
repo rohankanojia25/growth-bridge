@@ -171,7 +171,7 @@ export default async function HomePage() {
                 Growth Bridge Accelerator helps Indian businesses plan smarter, get online, manage every customer, and grow faster.
               </p>
 
-              <div className="pt-2 flex flex-wrap items-center gap-4">
+              <div className="pt-2 flex flex-col min-[480px]:flex-row items-stretch min-[480px]:items-center gap-3 min-[480px]:gap-4 w-full min-[480px]:w-auto [&>*]:w-full min-[480px]:[&>*]:w-auto">
                 <Button href="/book-consultation" size="lg" showArrow>
                   Book Free Consultation
                 </Button>
@@ -187,7 +187,7 @@ export default async function HomePage() {
             </div>
 
             {/* Right Column: Hero Visual Frame */}
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-5 max-w-md mx-auto lg:max-w-none w-full">
               <div className="relative">
                 {/* Glow behind frame */}
                 <div
@@ -372,7 +372,7 @@ export default async function HomePage() {
                 <span className="text-xs text-text-dim font-mono">Deliverables · Review · Scaling</span>
                 <Link
                   href="/services/business-consulting"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-green hover:underline group"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-green hover:underline group min-h-[44px] py-2"
                 >
                   <span>Explore Consulting</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -416,7 +416,7 @@ export default async function HomePage() {
               <div className="pt-4 border-t border-border">
                 <Link
                   href="/services/website-generation"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-text hover:text-green group"
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-text hover:text-green group min-h-[44px] py-2"
                 >
                   <span>View Website Details</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -460,7 +460,7 @@ export default async function HomePage() {
               <div className="pt-4 border-t border-border">
                 <Link
                   href="/services/crm-for-businesses"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-text hover:text-green group"
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-text hover:text-green group min-h-[44px] py-2"
                 >
                   <span>View CRM Details</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -505,7 +505,7 @@ export default async function HomePage() {
                 <span className="text-xs text-text-dim font-mono">Acquisition · Local SEO · Paid Performance</span>
                 <Link
                   href="/services/full-stack-marketing"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-green hover:underline group"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-green hover:underline group min-h-[44px] py-2"
                 >
                   <span>Explore Marketing</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -733,7 +733,7 @@ export default async function HomePage() {
               <div className="pt-4 flex flex-wrap items-center gap-4 text-xs font-mono">
                 <a
                   href={`tel:${BUSINESS_INFO.phone}`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass border border-white/10 text-text hover:text-green transition-colors"
+                  className="inline-flex items-center gap-2 px-4 min-h-[44px] rounded-full glass border border-white/10 text-text hover:text-green transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5 text-green" />
                   <span>Call {BUSINESS_INFO.phoneFormatted}</span>
@@ -741,7 +741,7 @@ export default async function HomePage() {
 
                 <a
                   href={BUSINESS_INFO.whatsappUrl}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass border border-green/30 text-green hover:bg-green/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 min-h-[44px] rounded-full glass border border-green/30 text-green hover:bg-green/10 transition-colors"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
                   <span>Direct WhatsApp Chat</span>

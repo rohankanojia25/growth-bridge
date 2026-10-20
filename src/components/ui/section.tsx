@@ -12,7 +12,7 @@ export function Section({ children, className, id, raised = false }: SectionProp
     <section
       id={id}
       className={cn(
-        'relative py-[clamp(72px,10vw,140px)]',
+        'relative py-14 sm:py-18 md:py-20 lg:py-28 overflow-clip',
         raised ? 'bg-bg-raised' : 'bg-bg',
         id && 'scroll-mt-24',
         className

@@ -105,7 +105,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-bg text-text-muted font-body pb-16 md:pb-0">
+      <body className="min-h-full flex flex-col bg-bg text-text-muted font-body pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
         <a href="#main-content" className="skip-to-content">
           Skip to content
         </a>

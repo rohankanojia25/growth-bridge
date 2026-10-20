@@ -106,7 +106,7 @@ export function Header() {
                   <Link
                     href={item.href}
                     className={cn(
-                      'relative flex items-center gap-1.5 px-3.5 py-2 text-sm font-body font-medium transition-colors rounded-lg group',
+                      'relative flex items-center gap-1.5 px-3.5 min-h-[44px] flex items-center text-sm font-body font-medium transition-colors rounded-lg group',
                       active ? 'text-text' : 'text-text-muted hover:text-text'
                     )}
                     aria-expanded={isDropdownOpen}
@@ -175,7 +175,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'relative px-3.5 py-2 text-sm font-body font-medium transition-colors rounded-lg',
+                  'relative px-3.5 min-h-[44px] flex items-center text-sm font-body font-medium transition-colors rounded-lg',
                   active ? 'text-text' : 'text-text-muted hover:text-text'
                 )}
               >
@@ -227,7 +227,7 @@ export function Header() {
         {/* Content Pane */}
         <nav
           className={cn(
-            'relative h-[calc(100vh-72px)] glass border-r border-border overflow-y-auto p-6 flex flex-col justify-between transition-transform duration-300 max-w-[340px] w-full',
+            'relative h-[calc(100dvh-72px)] glass border-r border-border overflow-y-auto p-6 flex flex-col justify-between transition-transform duration-300 max-w-[340px] w-full',
             isMobileOpen ? 'translate-x-0 pointer-events-auto' : '-translate-x-full pointer-events-none'
           )}
           aria-label="Mobile navigation links"
@@ -242,7 +242,7 @@ export function Header() {
                     <Link
                       href={item.href}
                       className={cn(
-                        'flex items-center justify-between px-3 py-2.5 rounded-xl font-display text-lg font-medium transition-colors',
+                        'flex items-center justify-between px-3 min-h-[44px] flex items-center justify-between rounded-xl font-display text-lg font-medium transition-colors',
                         active ? 'text-green bg-green/10' : 'text-text hover:bg-white/[0.04]'
                       )}
                     >
@@ -257,7 +257,7 @@ export function Header() {
                             key={service.key}
                             href={`/services/${service.slug}`}
                             className={cn(
-                              'block px-3 py-1.5 text-sm transition-colors rounded-lg',
+                              'flex items-center px-3 min-h-[44px] text-sm transition-colors rounded-lg',
                               pathname === `/services/${service.slug}`
                                 ? 'text-green font-medium'
                                 : 'text-text-muted hover:text-text'

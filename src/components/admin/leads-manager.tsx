@@ -2,18 +2,22 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { cn, formatDate, formatTime } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
-import { formatDate, formatTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Search,
+  Filter,
   Download,
   Phone,
   MessageCircle,
+  Mail,
+  Calendar,
   X,
-  Plus,
+  ExternalLink,
   Clock,
-  Filter,
+  Send,
+  Sparkles,
 } from 'lucide-react';
 
 interface LeadRecord {
@@ -25,9 +29,10 @@ interface LeadRecord {
   service: string;
   budget_range: string | null;
   message: string | null;
+  package_id: string | null;
   source: string;
-  status: string;
-  notes: Array<{ at: string; text: string }>;
+  status: 'new' | 'contacted' | 'qualified' | 'proposal_sent' | 'won' | 'lost';
+  notes: Array<{ text: string; created_at: string; author?: string }>;
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
@@ -36,113 +41,143 @@ interface LeadRecord {
   referrer: string | null;
   landing_path: string | null;
   created_at: string;
+  updated_at: string;
 }
 
-export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
+interface LeadsManagerProps {
+  initialLeads: LeadRecord[];
+}
+
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All Statuses' },
+  { value: 'new', label: 'New' },
+  { value: 'contacted', label: 'Contacted' },
+  { value: 'qualified', label: 'Qualified' },
+  { value: 'proposal_sent', label: 'Proposal Sent' },
+  { value: 'won', label: 'Won' },
+  { value: 'lost', label: 'Lost' },
+] as const;
+
+const SERVICE_FILTER_OPTIONS = [
+  { value: 'all', label: 'All Services' },
+  { value: 'consulting', label: 'Business Consulting' },
+  { value: 'website', label: 'Website Generation' },
+  { value: 'crm', label: 'CRM for Businesses' },
+  { value: 'marketing', label: 'Full-Stack Marketing' },
+  { value: 'unsure', label: 'Not Sure Yet' },
+] as const;
+
+export function LeadsManager({ initialLeads }: LeadsManagerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [leads, setLeads] = useState<LeadRecord[]>(initialLeads);
-  const [search, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [serviceFilter, setServiceFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
 
-  // Detail Drawer state
+  // Drawer state from URL
   const selectedLeadId = searchParams.get('lead');
-  const selectedLead = leads.find((l) => l.id === selectedLeadId) || null;
+  const selectedLead = useMemo(() => {
+    return leads.find((l) => l.id === selectedLeadId) || null;
+  }, [leads, selectedLeadId]);
 
+  // Note form state
   const [newNote, setNewNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   // Filtered leads
   const filteredLeads = useMemo(() => {
-    return leads.filter((l) => {
+    return leads.filter((lead) => {
       const matchesSearch =
-        search === '' ||
-        l.name.toLowerCase().includes(search.toLowerCase()) ||
-        l.phone.includes(search) ||
-        (l.email && l.email.toLowerCase().includes(search.toLowerCase())) ||
-        (l.business_name && l.business_name.toLowerCase().includes(search.toLowerCase()));
+        searchTerm === '' ||
+        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.phone.includes(searchTerm) ||
+        (lead.email && lead.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (lead.business_name && lead.business_name.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      const matchesStatus = statusFilter === 'all' || l.status === statusFilter;
-      const matchesService = serviceFilter === 'all' || l.service === serviceFilter;
-      const matchesSource = sourceFilter === 'all' || l.source === sourceFilter;
+      const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
+      const matchesService = serviceFilter === 'all' || lead.service === serviceFilter;
+      const matchesSource = sourceFilter === 'all' || lead.source === sourceFilter;
 
       return matchesSearch && matchesStatus && matchesService && matchesSource;
     });
-  }, [leads, search, statusFilter, serviceFilter, sourceFilter]);
+  }, [leads, searchTerm, statusFilter, serviceFilter, sourceFilter]);
 
-  // Update Status
-  const handleStatusChange = async (newStatus: string) => {
-    if (!selectedLead) return;
-    setUpdatingStatus(true);
-
+  // Update lead status
+  const updateStatus = async (leadId: string, nextStatus: LeadRecord['status']) => {
     try {
       const { error } = await supabase
         .from('leads')
-        .update({ status: newStatus })
-        .eq('id', selectedLead.id);
+        .update({ status: nextStatus })
+        .eq('id', leadId);
 
-      if (!error) {
-        setLeads((prev) =>
-          prev.map((l) => (l.id === selectedLead.id ? { ...l, status: newStatus } : l))
-        );
-      }
-    } finally {
-      setUpdatingStatus(false);
+      if (error) throw error;
+
+      setLeads((prev) =>
+        prev.map((l) => (l.id === leadId ? { ...l, status: nextStatus } : l))
+      );
+    } catch (err) {
+      console.error('Failed to update lead status:', err);
     }
   };
 
-  // Add Append-Only Timestamped Note
+  // Add internal note
   const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedLead || !newNote.trim()) return;
+    if (!newNote.trim() || !selectedLead) return;
+
     setSavingNote(true);
-
-    const noteObj = {
-      at: new Date().toISOString(),
-      text: newNote.trim(),
-    };
-
-    const currentNotes = Array.isArray(selectedLead.notes) ? selectedLead.notes : [];
-    const updatedNotes = [...currentNotes, noteObj];
-
     try {
+      const existingNotes = Array.isArray(selectedLead.notes) ? selectedLead.notes : [];
+      const updatedNotes = [
+        ...existingNotes,
+        {
+          text: newNote.trim(),
+          created_at: new Date().toISOString(),
+          author: 'Admin',
+        },
+      ];
+
       const { error } = await supabase
         .from('leads')
         .update({ notes: updatedNotes })
         .eq('id', selectedLead.id);
 
-      if (!error) {
-        setLeads((prev) =>
-          prev.map((l) => (l.id === selectedLead.id ? { ...l, notes: updatedNotes } : l))
-        );
-        setNewNote('');
-      }
+      if (error) throw error;
+
+      setLeads((prev) =>
+        prev.map((l) => (l.id === selectedLead.id ? { ...l, notes: updatedNotes } : l))
+      );
+      setNewNote('');
+    } catch (err) {
+      console.error('Failed to save note:', err);
     } finally {
       setSavingNote(false);
     }
   };
 
-  // Export CSV of filtered list per Section 9.5
-  const handleExportCSV = () => {
+  // Export CSV per Section 9.5
+  const exportCSV = () => {
     const headers = [
       'ID',
       'Name',
       'Phone',
       'Email',
-      'Business',
+      'Business Name',
       'Service',
-      'Budget',
+      'Budget Range',
       'Status',
       'Source',
       'Created At',
       'UTM Source',
       'UTM Medium',
+      'UTM Campaign',
+      'Referrer',
       'Landing Path',
+      'Message',
     ];
 
     const rows = filteredLeads.map((l) => [
@@ -158,55 +193,50 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
       l.created_at,
       l.utm_source || '',
       l.utm_medium || '',
-      l.landing_path || '',
+      l.utm_campaign || '',
+      `"${(l.referrer || '').replace(/"/g, '""')}"`,
+      `"${l.landing_path || ''}"`,
+      `"${(l.message || '').replace(/"/g, '""')}"`,
     ]);
 
     const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `gba_leads_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const closeDrawer = () => {
-    router.push('/admin/leads');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `growth-bridge-leads-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-6">
-      {/* Top Bar: Title & CSV Export */}
+      {/* Header & Export */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-h2 text-2xl text-text">Leads & Inquiries</h1>
-          <p className="text-xs text-text-muted mt-1">
-            Showing {filteredLeads.length} of {leads.length} recorded leads.
+          <h1 className="text-display text-2xl sm:text-3xl font-bold">Leads & Inquiries</h1>
+          <p className="text-body text-xs text-text-dim mt-1">
+            Total {leads.length} leads received · Showing {filteredLeads.length} filtered
           </p>
         </div>
 
-        <button
-          onClick={handleExportCSV}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-border text-xs font-mono text-text hover:text-green hover:border-green/40 transition-colors"
-        >
+        <Button onClick={exportCSV} variant="secondary" size="sm" className="gap-2 self-start sm:self-auto min-h-[44px]">
           <Download className="w-4 h-4 text-green" />
           <span>Export Filtered CSV</span>
-        </button>
+        </Button>
       </div>
 
-      {/* Filters & Search Toolbar */}
-      <div className="rounded-2xl glass border border-border p-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
+      {/* Filters Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Search */}
         <div className="relative">
           <Search className="w-4 h-4 text-text-dim absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search name, phone, email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-10 w-full pl-9 pr-4 rounded-xl bg-bg border border-border text-xs text-text placeholder:text-text-dim focus:outline-none focus:border-green"
+            className="w-full bg-surface border border-border rounded-xl pl-9 pr-4 py-2.5 text-xs text-text placeholder:text-text-dim focus:outline-none focus:border-green min-h-[44px]"
           />
         </div>
 
@@ -214,36 +244,33 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 px-3 rounded-xl bg-bg border border-border text-xs text-text focus:outline-none focus:border-green"
+          className="bg-surface border border-border rounded-xl px-3 py-2.5 text-xs text-text focus:outline-none focus:border-green min-h-[44px]"
         >
-          <option value="all">All Statuses</option>
-          <option value="new">New</option>
-          <option value="contacted">Contacted</option>
-          <option value="qualified">Qualified</option>
-          <option value="proposal_sent">Proposal Sent</option>
-          <option value="won">Won</option>
-          <option value="lost">Lost</option>
+          {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
 
         {/* Service Filter */}
         <select
           value={serviceFilter}
           onChange={(e) => setServiceFilter(e.target.value)}
-          className="h-10 px-3 rounded-xl bg-bg border border-border text-xs text-text focus:outline-none focus:border-green"
+          className="bg-surface border border-border rounded-xl px-3 py-2.5 text-xs text-text focus:outline-none focus:border-green min-h-[44px]"
         >
-          <option value="all">All Services</option>
-          <option value="consulting">Business Consulting</option>
-          <option value="website">Website Generation</option>
-          <option value="crm">CRM for Businesses</option>
-          <option value="marketing">Full-Stack Marketing</option>
-          <option value="unsure">Not Sure</option>
+          {SERVICE_FILTER_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
 
         {/* Source Filter */}
         <select
           value={sourceFilter}
           onChange={(e) => setSourceFilter(e.target.value)}
-          className="h-10 px-3 rounded-xl bg-bg border border-border text-xs text-text focus:outline-none focus:border-green"
+          className="bg-surface border border-border rounded-xl px-3 py-2.5 text-xs text-text focus:outline-none focus:border-green min-h-[44px]"
         >
           <option value="all">All Sources</option>
           <option value="contact_form">Contact Form</option>
@@ -252,9 +279,51 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
         </select>
       </div>
 
-      {/* Leads Table */}
+      {/* Leads Table & Mobile Stacked Cards */}
       <div className="rounded-2xl glass border border-border overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Stacked Cards (< 768px) */}
+        <div className="md:hidden divide-y divide-border">
+          {filteredLeads.length === 0 ? (
+            <div className="py-12 text-center text-text-dim text-xs">
+              No leads match the selected filters.
+            </div>
+          ) : (
+            filteredLeads.map((lead) => (
+              <div
+                key={lead.id}
+                onClick={() => router.push(`/admin/leads?lead=${lead.id}`)}
+                className="p-4 space-y-3 hover:bg-white/[0.03] transition-colors cursor-pointer"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-semibold text-text text-sm">{lead.name}</div>
+                    {lead.business_name && (
+                      <div className="text-xs text-text-dim mt-0.5">{lead.business_name}</div>
+                    )}
+                  </div>
+                  <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface border border-border text-green shrink-0">
+                    {lead.status.replace('_', ' ')}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-text-muted">
+                  <span className="font-mono">+91 {lead.phone}</span>
+                  <span className="capitalize">{lead.service}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-text-dim pt-1 border-t border-border/50">
+                  <span className="font-mono">{formatDate(lead.created_at)}</span>
+                  <span className="text-green font-medium flex items-center gap-1">
+                    View Details →
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table (>= 768px) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="border-b border-border text-text-dim uppercase font-mono tracking-wider bg-surface/50">
               <tr>
@@ -315,167 +384,169 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
         </div>
       </div>
 
-      {/* Section 9.5: Detail Drawer opened by ?lead=<id> */}
+      {/* Detail Drawer */}
       {selectedLead && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-bg/75 backdrop-blur-sm"
-            onClick={closeDrawer}
+            className="fixed inset-0 bg-bg/80 backdrop-blur-sm transition-opacity"
+            onClick={() => router.push('/admin/leads')}
             aria-hidden="true"
           />
 
-          {/* Drawer Pane */}
-          <div className="relative w-full max-w-lg bg-surface border-l border-border h-full overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl flex flex-col justify-between">
+          <aside className="relative w-full max-w-lg bg-surface border-l border-border h-full flex flex-col justify-between overflow-y-auto z-10 shadow-2xl p-6">
             <div className="space-y-6">
-              {/* Header */}
+              {/* Drawer Header */}
               <div className="flex items-start justify-between border-b border-border pb-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-green">
-                    Lead Details
-                  </span>
-                  <h2 className="text-h3 text-xl text-text mt-0.5">{selectedLead.name}</h2>
+                  <div className="text-eyebrow text-green">Lead Details</div>
+                  <h2 className="text-h3 text-xl text-text font-bold mt-1">
+                    {selectedLead.name}
+                  </h2>
                   {selectedLead.business_name && (
-                    <p className="text-xs text-text-dim">{selectedLead.business_name}</p>
+                    <p className="text-xs text-text-dim mt-0.5">
+                      {selectedLead.business_name}
+                    </p>
                   )}
                 </div>
-
                 <button
-                  onClick={closeDrawer}
-                  className="p-2 rounded-xl text-text-dim hover:text-text hover:bg-white/[0.04]"
+                  onClick={() => router.push('/admin/leads')}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-text-dim hover:text-text hover:bg-white/[0.04]"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Instant Call / WhatsApp Buttons */}
-              <div className="grid grid-cols-2 gap-3">
-                <a
-                  href={`tel:+91${selectedLead.phone}`}
-                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-green text-[#04110A] text-xs font-semibold hover:shadow-[0_0_20px_rgba(25,242,140,0.35)] transition-all"
-                >
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>Call +91 {selectedLead.phone}</span>
-                </a>
-
-                <a
-                  href={`https://wa.me/91${selectedLead.phone}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl glass border border-border text-xs font-semibold text-green hover:bg-green/10 transition-colors"
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  <span>WhatsApp Chat</span>
-                </a>
+              {/* Status Picker */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-mono uppercase text-text-dim">Update Pipeline Status</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['new', 'contacted', 'qualified', 'proposal_sent', 'won', 'lost'] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => updateStatus(selectedLead.id, s)}
+                      className={cn(
+                        'px-2 py-1.5 rounded-lg text-xs font-mono uppercase transition-colors',
+                        selectedLead.status === s
+                          ? 'bg-green text-[#04110A] font-semibold'
+                          : 'bg-bg border border-border text-text-dim hover:text-text'
+                      )}
+                    >
+                      {s.replace('_', ' ')}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Status Updater */}
-              <div className="p-4 rounded-2xl bg-bg border border-border space-y-2">
-                <label className="text-xs font-mono uppercase tracking-wider text-text-dim block">
-                  Update Lead Pipeline Status
-                </label>
-                <select
-                  value={selectedLead.status}
-                  onChange={(e) => handleStatusChange(e.target.value)}
-                  disabled={updatingStatus}
-                  className="h-10 w-full px-3 rounded-xl bg-surface border border-border text-xs text-text focus:outline-none focus:border-green"
-                >
-                  <option value="new">New (Uncontacted)</option>
-                  <option value="contacted">Contacted</option>
-                  <option value="qualified">Qualified</option>
-                  <option value="proposal_sent">Proposal Sent</option>
-                  <option value="won">Won (Active Client)</option>
-                  <option value="lost">Lost</option>
-                </select>
-              </div>
-
-              {/* Inquiry Details */}
-              <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-text-dim">Email:</span>
-                  <span className="text-text font-medium">{selectedLead.email || 'None'}</span>
+              {/* Direct Communication Quick Actions */}
+              <div className="space-y-2">
+                <label className="text-xs font-mono uppercase text-text-dim">Direct Contact</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={`tel:+91${selectedLead.phone}`}
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-bg border border-border text-text hover:text-green text-xs font-semibold"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-green" />
+                    <span>Call Client</span>
+                  </a>
+                  <a
+                    href={`https://wa.me/91${selectedLead.phone}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-green/10 border border-green/30 text-green hover:bg-green/20 text-xs font-semibold"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </a>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-text-dim">Service:</span>
-                  <span className="text-text font-medium capitalize">{selectedLead.service}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-text-dim">Monthly Budget:</span>
-                  <span className="text-text font-medium">{selectedLead.budget_range || 'Not specified'}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-text-dim">Form Source:</span>
-                  <span className="text-text font-medium">{selectedLead.source}</span>
-                </div>
-                {selectedLead.message && (
-                  <div className="pt-2">
-                    <span className="text-text-dim block mb-1">Message:</span>
-                    <div className="p-3 rounded-xl bg-bg border border-border text-text-muted leading-relaxed">
-                      {selectedLead.message}
-                    </div>
-                  </div>
+                {selectedLead.email && (
+                  <a
+                    href={`mailto:${selectedLead.email}`}
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-bg border border-border text-text hover:text-green text-xs font-medium"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-green" />
+                    <span>{selectedLead.email}</span>
+                  </a>
                 )}
               </div>
 
-              {/* UTM & Attribution Details */}
-              <div className="p-4 rounded-2xl bg-bg border border-border space-y-2 text-xs">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-green">
-                  Acquisition Attribution
+              {/* Metadata Fields */}
+              <div className="space-y-3 border-t border-border pt-4 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/50">
+                  <span className="text-text-dim">Selected Service:</span>
+                  <span className="text-text font-medium capitalize">{selectedLead.service}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-text-muted">
-                  <div>Source: <span className="text-text">{selectedLead.utm_source || 'direct'}</span></div>
-                  <div>Medium: <span className="text-text">{selectedLead.utm_medium || 'none'}</span></div>
-                  <div>Campaign: <span className="text-text">{selectedLead.utm_campaign || 'none'}</span></div>
-                  <div>Landing: <span className="text-text font-mono text-[11px]">{selectedLead.landing_path || '/'}</span></div>
+                <div className="flex justify-between py-1 border-b border-border/50">
+                  <span className="text-text-dim">Budget Range:</span>
+                  <span className="text-text font-medium">{selectedLead.budget_range || 'Not specified'}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/50">
+                  <span className="text-text-dim">Lead Source:</span>
+                  <span className="font-mono text-text-dim">{selectedLead.source}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/50">
+                  <span className="text-text-dim">Received On:</span>
+                  <span className="font-mono text-text-dim">{formatDate(selectedLead.created_at)} {formatTime(selectedLead.created_at)}</span>
                 </div>
               </div>
 
-              {/* Append-Only Timestamped Notes */}
-              <div className="space-y-3">
-                <div className="text-xs font-mono uppercase tracking-wider text-text flex items-center justify-between">
-                  <span>Timestamped Notes</span>
-                  <span className="text-text-dim">{selectedLead.notes?.length || 0} notes</span>
+              {/* Message */}
+              {selectedLead.message && (
+                <div className="space-y-1.5 border-t border-border pt-4">
+                  <label className="text-xs font-mono uppercase text-text-dim">Client Inquiry Message</label>
+                  <div className="p-3.5 rounded-xl bg-bg border border-border text-xs text-text-muted leading-relaxed">
+                    {selectedLead.message}
+                  </div>
                 </div>
+              )}
 
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+              {/* UTM & Attribution */}
+              {(selectedLead.utm_source || selectedLead.referrer || selectedLead.landing_path) && (
+                <div className="space-y-2 border-t border-border pt-4">
+                  <label className="text-xs font-mono uppercase text-text-dim">Acquisition Attribution</label>
+                  <div className="p-3 rounded-xl bg-bg border border-border space-y-1 font-mono text-[11px] text-text-dim">
+                    {selectedLead.utm_source && <div>utm_source: <span className="text-green">{selectedLead.utm_source}</span></div>}
+                    {selectedLead.utm_medium && <div>utm_medium: <span className="text-text">{selectedLead.utm_medium}</span></div>}
+                    {selectedLead.utm_campaign && <div>utm_campaign: <span className="text-text">{selectedLead.utm_campaign}</span></div>}
+                    {selectedLead.landing_path && <div>landing_path: <span className="text-text">{selectedLead.landing_path}</span></div>}
+                    {selectedLead.referrer && <div className="truncate">referrer: <span className="text-text">{selectedLead.referrer}</span></div>}
+                  </div>
+                </div>
+              )}
+
+              {/* Internal Notes */}
+              <div className="space-y-3 border-t border-border pt-4">
+                <label className="text-xs font-mono uppercase text-text-dim">Internal Team Notes</label>
+                
+                <div className="space-y-2 max-h-48 overflow-y-auto">
                   {(!selectedLead.notes || selectedLead.notes.length === 0) ? (
-                    <div className="text-xs text-text-dim italic">No internal notes added yet.</div>
+                    <p className="text-xs text-text-dim italic">No internal notes yet.</p>
                   ) : (
-                    selectedLead.notes.map((note, i) => (
-                      <div key={i} className="p-3 rounded-xl bg-bg border border-border text-xs space-y-1">
-                        <div className="text-[10px] font-mono text-green flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          <span>{formatDate(note.at)} at {formatTime(note.at)}</span>
+                    selectedLead.notes.map((note, idx) => (
+                      <div key={idx} className="p-2.5 rounded-lg bg-bg border border-border text-xs space-y-1">
+                        <div className="flex justify-between text-[10px] text-text-dim font-mono">
+                          <span>{note.author || 'Staff'}</span>
+                          <span>{formatDate(note.created_at)}</span>
                         </div>
-                        <div className="text-text leading-relaxed">{note.text}</div>
+                        <p className="text-text-muted">{note.text}</p>
                       </div>
                     ))
                   )}
                 </div>
 
-                {/* Add Note Form */}
-                <form onSubmit={handleAddNote} className="space-y-2 pt-2">
+                <form onSubmit={handleAddNote} className="space-y-2">
                   <textarea
-                    rows={2}
-                    placeholder="Add an internal note (e.g. called back Rajesh, proposal scheduled)..."
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-bg border border-border text-xs text-text placeholder:text-text-dim focus:outline-none focus:border-green"
+                    placeholder="Add an internal note about client conversation..."
+                    className="w-full bg-bg border border-border rounded-xl p-3 text-xs text-text placeholder:text-text-dim focus:outline-none focus:border-green resize-none h-20"
                   />
-                  <Button type="submit" size="sm" loading={savingNote} className="text-xs h-8">
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Append Note</span>
+                  <Button type="submit" size="sm" loading={savingNote} className="w-full text-xs">
+                    Save Note
                   </Button>
                 </form>
               </div>
             </div>
-
-            <div className="pt-4 border-t border-border">
-              <Button variant="secondary" onClick={closeDrawer} className="w-full text-xs">
-                Close Drawer
-              </Button>
-            </div>
-          </div>
+          </aside>
         </div>
       )}
     </div>

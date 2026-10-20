@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { SiteImage } from './site-image';
 
 export interface LogoProps {
   variant?: 'full' | 'mark';
@@ -74,7 +73,7 @@ export function Logo({ variant = 'full', className, height }: LogoProps) {
     <Link
       href="/"
       className={cn(
-        'inline-flex items-center shrink-0 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-green/25 rounded-lg transition-opacity hover:opacity-95',
+        'inline-flex items-center shrink-0 min-h-[44px] py-1.5 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-green/25 rounded-lg transition-opacity hover:opacity-95',
         className
       )}
       aria-label="Growth Bridge Accelerator, home"

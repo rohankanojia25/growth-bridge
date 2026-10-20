@@ -36,9 +36,9 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 const sizes: Record<ButtonSize, string> = {
-  default: 'h-12 px-6 text-[15px]',
-  sm: 'h-9 px-4 text-sm',
-  lg: 'h-14 px-8 text-base',
+  default: 'min-h-[44px] h-12 px-6 text-base sm:text-[15px]',
+  sm: 'min-h-[44px] h-11 px-4 text-sm',
+  lg: 'min-h-[48px] h-14 px-8 text-base',
 };
 
 export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
@@ -54,7 +54,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
     } = props;
 
     const baseClasses = cn(
-      'inline-flex items-center justify-center gap-2 rounded-full font-body font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-green/25 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:pointer-events-none select-none whitespace-nowrap',
+      'inline-flex items-center justify-center gap-2 rounded-full font-body font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-green/25 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:pointer-events-none select-none max-w-full text-center leading-snug',
       variants[variant],
       sizes[size],
       className

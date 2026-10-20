@@ -70,14 +70,14 @@ export function HomeQuickForm() {
       )}
 
       {/* Honeypot */}
-      <input type="text" className="sr-only" tabIndex={-1} autoComplete="off" {...register('website')} />
+      <input type="text" className="sr-only" tabIndex={-1} aria-hidden="true" autoComplete="off" {...register('website')} />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <input
             type="text"
             placeholder="Your Name *"
-            className="h-12 w-full rounded-xl bg-bg border border-border px-4 text-text placeholder:text-text-dim text-sm focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
+            className="h-12 w-full rounded-xl bg-bg border border-border px-4 text-text placeholder:text-text-dim text-base focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
             {...register('name')}
           />
           {errors.name && (
@@ -89,7 +89,7 @@ export function HomeQuickForm() {
           <input
             type="tel"
             placeholder="Phone Number *"
-            className="h-12 w-full rounded-xl bg-bg border border-border px-4 text-text placeholder:text-text-dim text-sm focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
+            className="h-12 w-full rounded-xl bg-bg border border-border px-4 text-text placeholder:text-text-dim text-base focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
             {...register('phone')}
           />
           {errors.phone && (
@@ -99,7 +99,7 @@ export function HomeQuickForm() {
 
         <div>
           <select
-            className="h-12 w-full rounded-xl bg-bg border border-border px-3 text-text text-sm focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
+            className="h-12 w-full rounded-xl bg-bg border border-border px-3 text-text text-base focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
             {...register('service')}
           >
             {SERVICE_OPTIONS.map((opt) => (
