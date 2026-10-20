@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Container } from '@/components/ui/container';
 import { Section } from '@/components/ui/section';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -9,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Marquee } from '@/components/ui/marquee';
 import { FAQAccordion } from '@/components/ui/faq-accordion';
 import { SiteImage } from '@/components/ui/site-image';
-
+import { HeroAbstractCard } from '@/components/sections/hero-abstract-card';
 import { GrowthSystemDiagram } from '@/components/sections/growth-system-diagram';
 import { ProcessTimeline } from '@/components/sections/process-timeline';
 import { HomeQuickForm } from '@/components/forms/home-quick-form';
@@ -187,23 +186,20 @@ export default async function HomePage() {
               </p>
             </div>
 
-            {/* Right Column: Hero Visual Graphic */}
-            <div className="lg:col-span-5 max-w-lg mx-auto lg:max-w-none w-full flex items-center justify-center">
-              <div className="relative w-full">
-                {/* Ambient glow matching the neon visual */}
+            {/* Right Column: Hero Visual Frame */}
+            <div className="lg:col-span-5 max-w-md mx-auto lg:max-w-none w-full">
+              <div className="relative">
+                {/* Glow behind frame */}
                 <div
-                  className="absolute -inset-4 rounded-full bg-green/15 opacity-40 blur-3xl pointer-events-none"
+                  className="absolute -inset-1 rounded-[24px] bg-green/20 opacity-50 blur-xl pointer-events-none"
                   aria-hidden="true"
                 />
-                <Image
-                  src="/images/hero-visual.png"
-                  alt="Growth Bridge Accelerator Connected Growth Platform"
-                  width={574}
-                  height={457}
-                  priority
-                  className="relative z-10 w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 574px"
-                />
+                <div className="relative glass border-gradient rounded-[24px] p-2 sm:p-3 overflow-hidden shadow-2xl">
+                  {/* Slot hero-visual with designed CSS abstract fallback */}
+                  <div className="relative rounded-[18px] overflow-hidden bg-bg">
+                    <HeroAbstractCard />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
