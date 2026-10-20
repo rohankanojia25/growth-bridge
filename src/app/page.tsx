@@ -144,8 +144,8 @@ export default async function HomePage() {
       {/* =========================================================================
           SECTION 2: HERO
           ========================================================================= */}
-      <section className="mobile-hero-container relative min-h-0 lg:min-h-[calc(100dvh-72px)] flex flex-col justify-center pt-3 pb-10 sm:pt-6 sm:pb-14 lg:py-16 overflow-hidden md:h-auto md:min-h-[calc(100dvh-72px)] md:max-h-none md:flex md:flex-col md:justify-center md:py-16 md:overflow-hidden">
-        {/* Layer 0: Background Grid and Noise */}
+      <section className="relative min-h-0 lg:min-h-[calc(100dvh-72px)] flex flex-col justify-center pt-3 pb-10 sm:pt-6 sm:pb-14 lg:py-16 overflow-hidden">
+        {/* Background Grid and Noise */}
         <div className="absolute inset-0 bg-grid pointer-events-none" />
         <div className="absolute inset-0 bg-noise pointer-events-none" />
 
@@ -165,55 +165,27 @@ export default async function HomePage() {
           aria-hidden="true"
         />
 
-        {/* Mobile Layer 1: Backdrop Dashboard Visual (< 768px) */}
-        <div className="mobile-hero-visual md:hidden" aria-hidden="true">
-          <div className="w-[390px] min-[390px]:w-[420px] max-w-none shrink-0 origin-bottom flex flex-col justify-end">
-            <HeroDashboardPreview />
-          </div>
-        </div>
-
-        {/* Mobile Layer 2: Translucent Scrim (< 768px) */}
-        <div
-          className="md:hidden absolute inset-0 pointer-events-none z-[2]"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(5,6,10,0.94) 0%, rgba(5,6,10,0.86) 40%, rgba(5,6,10,0.58) 70%, rgba(5,6,10,0.18) 100%)',
-          }}
-          aria-hidden="true"
-        />
-        {/* 64px Bottom Fade Blend */}
-        <div
-          className="md:hidden absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-[2] bg-gradient-to-b from-transparent to-[#05060A]"
-          aria-hidden="true"
-        />
-
-        {/* Layer 3: Text & Buttons */}
-        <Container className="relative z-[3] w-full px-4 pt-4 md:pt-0 md:px-6">
+        <Container className="relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-[46%_54%] gap-5 sm:gap-6 lg:gap-8 xl:gap-12 items-center">
             {/* Left Column: Copy & Actions */}
             <div className="w-full max-w-[620px] space-y-3.5 sm:space-y-4 lg:space-y-6">
-              <Eyebrow
-                pill
-                className="mobile-hero-eyebrow text-[11px] tracking-tight px-3 py-1 md:text-eyebrow md:tracking-[0.14em] md:px-4 md:py-2 whitespace-nowrap"
-              >
-                Strategy · Websites · CRM · Marketing
-              </Eyebrow>
+              <Eyebrow pill>Strategy · Websites · CRM · Marketing</Eyebrow>
 
-              <h1 className="font-display font-semibold text-[clamp(1.875rem,1.6rem+1.2vw,2.125rem)] md:text-[clamp(1.95rem,1.4rem+2vw,3.75rem)] leading-[1.1] md:leading-[1.08] tracking-[-0.035em] text-text max-w-[560px] [text-shadow:0_1px_12px_rgba(0,0,0,0.6)] md:[text-shadow:none]">
+              <h1 className="font-display font-semibold text-[clamp(1.95rem,1.4rem+2vw,3.75rem)] leading-[1.1] sm:leading-[1.08] tracking-[-0.035em] text-text max-w-[560px]">
                 Have an idea or a business?{' '}
                 We help it <span className="font-serif italic font-normal gradient-text">grow.</span>
               </h1>
 
-              <p className="mobile-hero-subhead text-body text-text-muted text-[15px] leading-[1.5] md:text-base lg:text-lg md:leading-relaxed max-w-[530px] [text-shadow:0_1px_12px_rgba(0,0,0,0.6)] md:[text-shadow:none]">
+              <p className="text-body text-text-muted text-[14.5px] sm:text-base lg:text-lg max-w-[530px] leading-relaxed">
                 Growth Bridge Accelerator helps Indian businesses plan smarter, get online, manage every customer, and grow faster.
               </p>
 
-              <div className="pt-2 md:pt-1 flex flex-col min-[340px]:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
+              <div className="pt-1 sm:pt-2 flex flex-row items-center gap-2.5 sm:gap-4 w-full sm:w-auto">
                 <Button
                   href="/book-consultation"
                   size="default"
                   showArrow
-                  className="w-full min-[340px]:w-[58%] md:w-auto md:flex-none text-sm md:text-base px-3 min-[400px]:px-5 md:px-6 h-11 md:h-12 lg:h-14 font-medium md:font-semibold whitespace-nowrap [&>svg]:hidden min-[400px]:[&>svg]:inline-block"
+                  className="flex-1 sm:flex-none text-xs min-[360px]:text-sm sm:text-base px-3.5 sm:px-6 h-11 sm:h-12 lg:h-14 font-medium sm:font-semibold"
                 >
                   Book Free Consultation
                 </Button>
@@ -221,7 +193,7 @@ export default async function HomePage() {
                   href="/services"
                   variant="secondary"
                   size="default"
-                  className="w-full min-[340px]:w-[42%] md:w-auto md:flex-none text-sm md:text-base px-2.5 min-[400px]:px-4 md:px-6 h-11 md:h-12 lg:h-14 font-medium md:font-semibold whitespace-nowrap"
+                  className="flex-1 sm:flex-none text-xs min-[360px]:text-sm sm:text-base px-3.5 sm:px-6 h-11 sm:h-12 lg:h-14 font-medium sm:font-semibold"
                 >
                   Explore Services
                 </Button>
@@ -253,8 +225,8 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right Column: Monevi-Style Interactive Glass Dashboard (Desktop Only) */}
-            <div className="hidden md:flex relative w-full items-center justify-center lg:justify-end mt-0">
+            {/* Right Column: Monevi-Style Interactive Glass Dashboard */}
+            <div className="relative w-full flex items-center justify-center lg:justify-end mt-0">
               <HeroDashboardPreview />
             </div>
           </div>
@@ -668,7 +640,7 @@ export default async function HomePage() {
               {testimonials.map((test) => (
                 <Card key={test.id} className="flex flex-col justify-between" spotlight>
                   <p className="text-sm text-text-muted leading-relaxed mb-6 italic">
-                    &ldquo;{test.quote}&rdquo;
+                    "{test.quote}"
                   </p>
                   <div className="border-t border-border pt-4">
                     <div className="font-display font-semibold text-text text-sm">

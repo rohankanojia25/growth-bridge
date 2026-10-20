@@ -37,15 +37,12 @@
   --cyan: #3DD6F5;
   --danger: #FF5C6C;
   --gradient-brand: linear-gradient(120deg, #19F28C 0%, #3DD6F5 45%, #7B61FF 100%);
-  --header-h: 72px;
-  --bottombar-h: calc(56px + env(safe-area-inset-bottom, 0px));
   --bottom-ui-offset: calc(56px + env(safe-area-inset-bottom, 0px) + 16px);
   color-scheme: dark;
 }
 
 @media (min-width: 768px) {
   :root {
-    --bottombar-h: 0px;
     --bottom-ui-offset: 92px;
   }
 }
@@ -333,80 +330,5 @@ img, video, iframe {
   }
   .bg-grid {
     opacity: 0.25 !important;
-  }
-}
-
-/* ─── Mobile Hero Layered Composition (< 768px) ─── */
-@media (max-width: 767px) {
-  .mobile-hero-container {
-    position: relative;
-    overflow: clip;
-    isolation: isolate;
-    height: calc(100svh - var(--header-h) - var(--bottombar-h));
-    min-height: 520px;
-    max-height: 780px;
-    width: 100%;
-  }
-
-  .mobile-hero-visual {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: 108%;
-    height: 58%;
-    pointer-events: none;
-    user-select: none;
-    opacity: 0.95;
-    z-index: 1;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    mask-image: linear-gradient(to bottom, transparent 0%, black 18%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%);
-  }
-
-  /* Short screens: height < 720px */
-  @media (max-height: 719px) {
-    .mobile-hero-eyebrow {
-      display: none !important;
-    }
-    .mobile-hero-subhead {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .mobile-hero-visual {
-      height: 52% !important;
-    }
-  }
-
-  /* Short screens: height < 660px */
-  @media (max-height: 659px) {
-    .mobile-hero-subhead {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .mobile-hero-visual {
-      height: 46% !important;
-    }
-  }
-
-  /* Landscape phones: height < 500px */
-  @media (max-height: 499px) {
-    .mobile-hero-container {
-      height: auto !important;
-      min-height: auto !important;
-      max-height: none !important;
-      padding-top: 1.5rem !important;
-      padding-bottom: 2.5rem !important;
-    }
-    .mobile-hero-visual {
-      display: none !important;
-    }
   }
 }
