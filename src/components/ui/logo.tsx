@@ -19,29 +19,16 @@ export function LogoFallbackMark({ size = 32 }: { size?: number }) {
       className="shrink-0"
     >
       <defs>
-        <linearGradient id="logo-arch-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+        <linearGradient id="logo-growth-grad" x1="0%" y1="0%" x2="20%" y2="100%">
           <stop offset="0%" stopColor="#19F28C" />
-          <stop offset="50%" stopColor="#3DD6F5" />
+          <stop offset="48%" stopColor="#3DD6F5" />
           <stop offset="100%" stopColor="#7B61FF" />
         </linearGradient>
       </defs>
-      {/* Bridge Arch with Top Convergence */}
-      <path
-        d="M6 34 C6 34 10 10 20 10 C30 10 34 34 34 34"
-        stroke="url(#logo-arch-grad)"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M12 34 C12 34 15 18 20 18 C25 18 28 34 28 34"
-        stroke="url(#logo-arch-grad)"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.65"
-      />
-      <circle cx="20" cy="10" r="3.25" fill="#19F28C" />
+      {/* 3 Rising Growth Bars */}
+      <rect x="3.75" y="23" width="7.5" height="12.5" rx="3.75" fill="url(#logo-growth-grad)" />
+      <rect x="16.25" y="14.5" width="7.5" height="21" rx="3.75" fill="url(#logo-growth-grad)" />
+      <rect x="28.75" y="4.5" width="7.5" height="31" rx="3.75" fill="url(#logo-growth-grad)" />
     </svg>
   );
 }
