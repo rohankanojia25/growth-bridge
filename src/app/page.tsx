@@ -209,10 +209,10 @@ export default async function HomePage() {
 
             {/* Right Column: Hero Visual Graphic */}
             <div className="lg:col-span-6 xl:col-span-7 relative w-full flex items-center justify-center lg:justify-end">
-              <div className="relative w-full max-w-[640px] lg:max-w-[740px] xl:max-w-[820px]">
+              <div className="relative w-full max-w-[560px] sm:max-w-[640px] lg:max-w-none lg:w-[108%] xl:w-[114%] lg:-mr-4 xl:-mr-8">
                 {/* Ambient glow matching the neon visual */}
                 <div
-                  className="absolute -inset-6 rounded-full bg-green/15 opacity-40 blur-3xl pointer-events-none"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(25,242,140,0.18)_0%,rgba(61,214,245,0.10)_35%,rgba(123,97,255,0.05)_60%,transparent_75%)] blur-3xl pointer-events-none -z-10"
                   aria-hidden="true"
                 />
                 <Image
@@ -221,8 +221,14 @@ export default async function HomePage() {
                   width={1376}
                   height={768}
                   priority
-                  className="relative z-10 w-full h-auto object-contain drop-shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
-                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 820px"
+                  className="relative z-10 w-full h-auto object-contain"
+                  style={{
+                    WebkitMaskImage:
+                      'radial-gradient(ellipse 70% 70% at 50% 50%, #000 48%, rgba(0,0,0,0.85) 62%, transparent 88%)',
+                    maskImage:
+                      'radial-gradient(ellipse 70% 70% at 50% 50%, #000 48%, rgba(0,0,0,0.85) 62%, transparent 88%)',
+                  }}
+                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 860px"
                 />
               </div>
             </div>
