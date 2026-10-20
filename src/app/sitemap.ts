@@ -89,7 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .eq('is_published', true);
 
     if (posts) {
-      blogRoutes = posts.map((post) => ({
+      blogRoutes = (posts as Array<{ slug: string; updated_at: string }>).map((post) => ({
         url: `${baseUrl}/blog/${post.slug}`,
         lastModified: new Date(post.updated_at),
         changeFrequency: 'monthly',
@@ -103,7 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .eq('is_published', true);
 
     if (cases) {
-      caseStudyRoutes = cases.map((cs) => ({
+      caseStudyRoutes = (cases as Array<{ slug: string; updated_at: string }>).map((cs) => ({
         url: `${baseUrl}/case-studies/${cs.slug}`,
         lastModified: new Date(cs.updated_at),
         changeFrequency: 'monthly',

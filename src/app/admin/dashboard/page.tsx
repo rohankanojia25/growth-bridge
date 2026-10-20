@@ -38,18 +38,28 @@ export default async function AdminDashboardPage() {
     won: 0,
     lost: 0,
   };
-  (statusRows || []).forEach((row) => {
+  ((statusRows || []) as Array<{ status: string | null }>).forEach((row) => {
     if (row.status && statusCounts[row.status] !== undefined) {
       statusCounts[row.status]++;
     }
   });
 
   // 4. 10 most recent leads
-  const { data: recentLeads } = await supabase
+  const { data: rawRecentLeads } = await supabase
     .from('leads')
     .select('id, name, phone, email, service, status, source, created_at')
     .order('created_at', { ascending: false })
     .limit(10);
+  const recentLeads = (rawRecentLeads || []) as Array<{
+    id: string;
+    name: string;
+    phone: string;
+    email: string | null;
+    service: string;
+    status: string;
+    source: string;
+    created_at: string;
+  }>;
 
   return (
     <div className="space-y-8">

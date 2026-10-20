@@ -1,10 +1,51 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-export async function createServerSupabaseClient() {
+export function isSupabaseConfigured(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return false;
+  if (url.includes('placeholder') || url === 'https://placeholder.supabase.co') return false;
+  return true;
+}
+
+export function createEmptySupabaseProxy(): any {
+  const dummyResult = { data: null, error: null, count: null };
+
+  const handler: ProxyHandler<any> = {
+    get(_target, prop) {
+      if (prop === 'then') {
+        return (resolve: (val: any) => void) => resolve(dummyResult);
+      }
+      if (prop === 'catch') {
+        return () => Promise.resolve(dummyResult);
+      }
+      if (prop === 'auth') {
+        return {
+          getUser: async () => ({ data: { user: null }, error: null }),
+          getSession: async () => ({ data: { session: null }, error: null }),
+          signOut: async () => ({ error: null }),
+        };
+      }
+      return new Proxy(() => {}, handler);
+    },
+    apply() {
+      return new Proxy(() => {}, handler);
+    },
+  };
+
+  return new Proxy(() => {}, handler);
+}
+
+export async function createServerSupabaseClient(): Promise<SupabaseClient<any, "public", any>> {
+  if (!isSupabaseConfigured()) {
+    return createEmptySupabaseProxy() as unknown as SupabaseClient<any, "public", any>;
+  }
+
   const cookieStore = await cookies();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
   return createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
@@ -25,10 +66,14 @@ export async function createServerSupabaseClient() {
   });
 }
 
-export function createServiceRoleClient() {
+export function createServiceRoleClient(): SupabaseClient<any, "public", any> {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!isSupabaseConfigured() || !serviceKey || serviceKey.includes('placeholder')) {
+    return createEmptySupabaseProxy() as unknown as SupabaseClient<any, "public", any>;
+  }
+
   const { createClient } = require('@supabase/supabase-js');
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key';
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 
   return createClient(supabaseUrl, serviceKey, {
     auth: {

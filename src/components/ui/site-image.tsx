@@ -18,7 +18,14 @@ const getCachedAsset = unstable_cache(
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      if (!supabaseUrl || !supabaseKey) return null;
+      if (
+        !supabaseUrl ||
+        !supabaseKey ||
+        supabaseUrl.includes('placeholder') ||
+        supabaseUrl === 'https://placeholder.supabase.co'
+      ) {
+        return null;
+      }
 
       const res = await fetch(
         `${supabaseUrl}/rest/v1/site_assets?slot_key=eq.${encodeURIComponent(
@@ -29,6 +36,7 @@ const getCachedAsset = unstable_cache(
             apikey: supabaseKey,
             Authorization: `Bearer ${supabaseKey}`,
           },
+          signal: AbortSignal.timeout(1500),
         }
       );
 

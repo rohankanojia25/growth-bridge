@@ -1,5 +1,5 @@
 import { hashIP } from '@/lib/utils';
-import { createServiceRoleClient } from '@/lib/supabase/server';
+import { createServiceRoleClient, isSupabaseConfigured } from '@/lib/supabase/server';
 
 const IP_HASH_SALT = process.env.IP_HASH_SALT || 'gba_secure_salt_2026';
 const MAX_REQUESTS_PER_WINDOW = 5;
@@ -11,6 +11,23 @@ const memoryRateLimits = new Map<string, { count: number; windowStart: number }>
 export async function checkRateLimit(ip: string, bucket: string = 'leads'): Promise<boolean> {
   const ipHash = hashIP(ip, IP_HASH_SALT);
   const now = Date.now();
+
+  if (!isSupabaseConfigured()) {
+    const key = `${ipHash}:${bucket}`;
+    const entry = memoryRateLimits.get(key);
+
+    if (!entry || now - entry.windowStart > WINDOW_DURATION_MS) {
+      memoryRateLimits.set(key, { count: 1, windowStart: now });
+      return true;
+    }
+
+    if (entry.count >= MAX_REQUESTS_PER_WINDOW) {
+      return false;
+    }
+
+    entry.count += 1;
+    return true;
+  }
 
   try {
     const supabase = createServiceRoleClient();
