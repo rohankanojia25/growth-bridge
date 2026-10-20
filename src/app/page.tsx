@@ -12,7 +12,7 @@ import { HeroAbstractCard } from '@/components/sections/hero-abstract-card';
 import { GrowthSystemDiagram } from '@/components/sections/growth-system-diagram';
 import { ProcessTimeline } from '@/components/sections/process-timeline';
 import { HomeQuickForm } from '@/components/forms/home-quick-form';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { BUSINESS_INFO, SERVICES } from '@/lib/utils';
 import {
   Compass,
@@ -114,7 +114,7 @@ export default async function HomePage() {
   let blogPosts: Array<{ id: string; title: string; slug: string; excerpt?: string; published_at?: string }> = [];
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
 
     const [logosRes, testRes, casesRes, blogsRes] = await Promise.all([
       supabase.from('client_logos').select('id, name, logo_url, website_url').eq('is_published', true).order('sort_order'),

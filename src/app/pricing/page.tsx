@@ -4,7 +4,7 @@ import { Section } from '@/components/ui/section';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { formatINR, BUSINESS_INFO } from '@/lib/utils';
 import { Check, MessageCircle, ArrowRight } from 'lucide-react';
 
@@ -56,7 +56,7 @@ export default async function PricingPage() {
   let publishedPackages: PackageRecord[] = [];
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data } = await supabase
       .from('packages')
       .select('*')

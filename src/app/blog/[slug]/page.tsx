@@ -5,7 +5,7 @@ import { Container } from '@/components/ui/container';
 import { Section } from '@/components/ui/section';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
 import { ArrowLeft, Calendar, Tag } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -19,7 +19,7 @@ export const revalidate = 600;
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createPublicSupabaseClient();
 
   const { data: post } = await supabase
     .from('blog_posts')
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostDetailPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createPublicSupabaseClient();
 
   // 1. Fetch published post
   const { data: post } = await supabase

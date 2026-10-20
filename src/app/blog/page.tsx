@@ -5,7 +5,7 @@ import { Section } from '@/components/ui/section';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
 import { BookOpen, ArrowRight, Calendar } from 'lucide-react';
 
@@ -63,7 +63,7 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
   let totalCount = 0;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data, count } = await supabase
       .from('blog_posts')
       .select('id, title, slug, excerpt, cover_image_url, tags, published_at', { count: 'exact' })

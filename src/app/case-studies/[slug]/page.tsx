@@ -5,7 +5,7 @@ import { Container } from '@/components/ui/container';
 import { Section } from '@/components/ui/section';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 interface CaseStudyPageProps {
@@ -16,7 +16,7 @@ export const revalidate = 600;
 
 export async function generateMetadata({ params }: CaseStudyPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createPublicSupabaseClient();
 
   const { data: study } = await supabase
     .from('case_studies')
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: CaseStudyPageProps): Promise<
 
 export default async function CaseStudyDetailPage({ params }: CaseStudyPageProps) {
   const { slug } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createPublicSupabaseClient();
 
   // 1. Fetch published case study
   const { data: study } = await supabase

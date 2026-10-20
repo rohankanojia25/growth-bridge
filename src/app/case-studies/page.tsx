@@ -5,7 +5,7 @@ import { Section } from '@/components/ui/section';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { ArrowRight, TrendingUp } from 'lucide-react';
 
 export const revalidate = 600; // ISR 600s per Section 6
@@ -53,7 +53,7 @@ export default async function CaseStudiesPage() {
   let caseStudies: CaseStudyRecord[] = [];
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data } = await supabase
       .from('case_studies')
       .select('id, title, slug, client_name, industry, summary, cover_image_url, results')

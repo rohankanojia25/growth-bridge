@@ -129,7 +129,7 @@ export function Header() {
                     className={cn(
                       'absolute top-full left-0 pt-2 transition-all duration-200',
                       isDropdownOpen
-                        ? 'opacity-100 visible translate-y-0'
+                        ? 'opacity-100 visible translate-y-0 pointer-events-auto'
                         : 'opacity-0 invisible -translate-y-2 pointer-events-none'
                     )}
                   >
@@ -211,14 +211,14 @@ export function Header() {
       <div
         className={cn(
           'fixed inset-0 top-[72px] z-40 lg:hidden transition-all duration-300',
-          isMobileOpen ? 'visible' : 'invisible'
+          isMobileOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
         )}
       >
         {/* Backdrop */}
         <div
           className={cn(
             'absolute inset-0 bg-bg/80 backdrop-blur-md transition-opacity duration-300',
-            isMobileOpen ? 'opacity-100' : 'opacity-0'
+            isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           )}
           onClick={() => setIsMobileOpen(false)}
           aria-hidden="true"
@@ -228,7 +228,7 @@ export function Header() {
         <nav
           className={cn(
             'relative h-[calc(100vh-72px)] glass border-r border-border overflow-y-auto p-6 flex flex-col justify-between transition-transform duration-300 max-w-[340px] w-full',
-            isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+            isMobileOpen ? 'translate-x-0 pointer-events-auto' : '-translate-x-full pointer-events-none'
           )}
           aria-label="Mobile navigation links"
         >

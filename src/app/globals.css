@@ -41,7 +41,8 @@
 
 /* ─── Global Base Styles ─── */
 html {
-  scroll-behavior: smooth;
+  /* Lenis handles smooth scrolling; native scroll-behavior must be auto to prevent thread locking */
+  scroll-behavior: auto;
 }
 
 body {

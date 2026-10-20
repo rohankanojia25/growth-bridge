@@ -38,6 +38,31 @@ export function createEmptySupabaseProxy(): any {
   return new Proxy(() => {}, handler);
 }
 
+/**
+ * Public client for static & ISR pages.
+ * DOES NOT call cookies(), allowing Next.js to prerender and cache at Vercel CDN Edge.
+ */
+export function createPublicSupabaseClient(): SupabaseClient<any, "public", any> {
+  if (!isSupabaseConfigured()) {
+    return createEmptySupabaseProxy() as unknown as SupabaseClient<any, "public", any>;
+  }
+
+  const { createClient } = require('@supabase/supabase-js');
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  return createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
+
+/**
+ * Authenticated client for server components that need user session (Admin portal).
+ * Reads and sets cookies.
+ */
 export async function createServerSupabaseClient(): Promise<SupabaseClient<any, "public", any>> {
   if (!isSupabaseConfigured()) {
     return createEmptySupabaseProxy() as unknown as SupabaseClient<any, "public", any>;
@@ -66,6 +91,9 @@ export async function createServerSupabaseClient(): Promise<SupabaseClient<any, 
   });
 }
 
+/**
+ * Service role client for API route handlers and server actions with full DB privileges.
+ */
 export function createServiceRoleClient(): SupabaseClient<any, "public", any> {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!isSupabaseConfigured() || !serviceKey || serviceKey.includes('placeholder')) {

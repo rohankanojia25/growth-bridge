@@ -20,12 +20,19 @@ export function Card({
   as: Component = 'div',
 }: CardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const rafId = useRef<number | null>(null);
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!cardRef.current || window.matchMedia('(pointer: coarse)').matches) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    cardRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-    cardRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const { offsetX, offsetY } = e.nativeEvent;
+
+    if (rafId.current !== null) cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      if (cardRef.current) {
+        cardRef.current.style.setProperty('--mx', `${offsetX}px`);
+        cardRef.current.style.setProperty('--my', `${offsetY}px`);
+      }
+    });
   }, []);
 
   return (

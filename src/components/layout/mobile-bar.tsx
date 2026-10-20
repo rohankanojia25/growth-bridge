@@ -23,6 +23,8 @@ export function MobileBar() {
 
           <a
             href={BUSINESS_INFO.whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 py-3.5 px-4 text-sm font-semibold text-green active:bg-white/[0.08] transition-colors"
             aria-label="Chat with Growth Bridge Accelerator on WhatsApp"
           >
