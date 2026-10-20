@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Marquee } from '@/components/ui/marquee';
 import { FAQAccordion } from '@/components/ui/faq-accordion';
 import { SiteImage } from '@/components/ui/site-image';
+import { HeroDashboardPreview } from '@/components/hero/hero-dashboard-preview';
 
 import { GrowthSystemDiagram } from '@/components/sections/growth-system-diagram';
 import { ProcessTimeline } from '@/components/sections/process-timeline';
@@ -21,6 +22,7 @@ import {
   Users,
   Megaphone,
   ArrowRight,
+  ArrowUpRight,
   UtensilsCrossed,
   ShoppingBag,
   Stethoscope,
@@ -165,7 +167,7 @@ export default async function HomePage() {
 
               <h1 className="font-display font-semibold text-[clamp(2.35rem,1.5rem+2.2vw,3.75rem)] leading-[1.08] tracking-[-0.035em] text-text max-w-[560px]">
                 Have an idea or a business?{' '}
-                <span className="gradient-text">We help it grow.</span>
+                We help it <span className="font-serif italic font-normal gradient-text">grow.</span>
               </h1>
 
               <p className="text-body text-text-muted text-base sm:text-lg max-w-[530px] leading-relaxed">
@@ -207,30 +209,9 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right Column: Hero Visual Graphic */}
+            {/* Right Column: Monevi-Style Interactive Glass Dashboard */}
             <div className="relative w-full flex items-center justify-center lg:justify-end">
-              <div className="relative w-full max-w-[640px] sm:max-w-[700px] lg:max-w-[760px] xl:max-w-[820px] lg:-mr-2 xl:-mr-6">
-                {/* Ambient glow matching the neon visual */}
-                <div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(25,242,140,0.18)_0%,rgba(61,214,245,0.10)_35%,rgba(123,97,255,0.05)_60%,transparent_75%)] blur-3xl pointer-events-none -z-10"
-                  aria-hidden="true"
-                />
-                <Image
-                  src="/images/hero-visual.png"
-                  alt="Growth Bridge Accelerator Connected Growth Platform"
-                  width={2312}
-                  height={1536}
-                  priority
-                  className="relative z-10 w-full h-auto object-contain"
-                  style={{
-                    WebkitMaskImage:
-                      'radial-gradient(ellipse 75% 65% at 50% 50%, #000 35%, rgba(0,0,0,0.8) 50%, transparent 72%)',
-                    maskImage:
-                      'radial-gradient(ellipse 75% 65% at 50% 50%, #000 35%, rgba(0,0,0,0.8) 50%, transparent 72%)',
-                  }}
-                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 52vw, 840px"
-                />
-              </div>
+              <HeroDashboardPreview />
             </div>
           </div>
         </Container>
