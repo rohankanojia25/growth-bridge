@@ -7,6 +7,8 @@ import { MobileBar } from '@/components/layout/mobile-bar';
 import { CookieConsent } from '@/components/layout/cookie-consent';
 import { Analytics } from '@/components/layout/analytics';
 import { SmoothScroll } from '@/components/layout/smooth-scroll';
+import { ScrollManager } from '@/components/layout/scroll-manager';
+import { BackToTop } from '@/components/ui/back-to-top';
 import { UTMTracker } from '@/components/layout/utm-tracker';
 import { BUSINESS_INFO } from '@/lib/utils';
 
@@ -124,8 +126,10 @@ export default function RootLayout({
         <Footer />
         <MobileBar />
         <CookieConsent />
+        <BackToTop />
         <Analytics />
         <SmoothScroll />
+        <ScrollManager />
         <UTMTracker />
       </body>
     </html>

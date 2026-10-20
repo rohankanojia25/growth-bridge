@@ -3,6 +3,18 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 
+export interface LenisInstance {
+  scrollTo: (
+    target: number | string | HTMLElement,
+    options?: { immediate?: boolean; force?: boolean; duration?: number }
+  ) => void;
+}
+
+export function getLenis(): LenisInstance | undefined {
+  if (typeof window === 'undefined') return undefined;
+  return (window as unknown as { __lenis?: LenisInstance }).__lenis;
+}
+
 export function SmoothScroll() {
   useEffect(() => {
     // Check if user prefers reduced motion
@@ -21,6 +33,8 @@ export function SmoothScroll() {
       smoothWheel: true,
     });
 
+    (window as unknown as { __lenis?: LenisInstance }).__lenis = lenis;
+
     let animationFrameId: number;
 
     function raf(time: number) {
@@ -32,6 +46,7 @@ export function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      delete (window as unknown as { __lenis?: LenisInstance }).__lenis;
       lenis.destroy();
     };
   }, []);

@@ -31,6 +31,7 @@ export function CookieConsent() {
 
   return (
     <aside
+      id="cookie-consent-banner"
       role="region"
       aria-label="Cookie consent banner"
       className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px))] left-0 right-0 max-w-none rounded-none rounded-t-2xl border-x-0 border-b-0 md:bottom-8 md:left-8 md:right-auto md:max-w-sm md:rounded-2xl md:border z-50 glass border-t border-border-strong p-4 sm:p-5 shadow-2xl backdrop-blur-2xl no-print animate-in fade-in slide-in-from-bottom-4 duration-300"

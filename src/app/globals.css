@@ -37,7 +37,14 @@
   --cyan: #3DD6F5;
   --danger: #FF5C6C;
   --gradient-brand: linear-gradient(120deg, #19F28C 0%, #3DD6F5 45%, #7B61FF 100%);
+  --bottom-ui-offset: calc(56px + env(safe-area-inset-bottom, 0px) + 16px);
   color-scheme: dark;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --bottom-ui-offset: 92px;
+  }
 }
 
 /* ─── Global Base Styles ─── */

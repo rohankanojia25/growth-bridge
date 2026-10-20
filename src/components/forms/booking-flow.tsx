@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +15,7 @@ import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { getStoredUTM } from '@/components/layout/utm-tracker';
 import { trackAnalyticsEvent } from '@/components/layout/analytics';
+import { getLenis } from '@/components/layout/smooth-scroll';
 import { cn, formatDate } from '@/lib/utils';
 import { Calendar, Clock, User, CheckCircle2, ChevronLeft, Tag } from 'lucide-react';
 import { z } from 'zod';
@@ -52,6 +53,29 @@ export function BookingFlow() {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [slotError, setSlotError] = useState<string | null>(null);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const prevStepRef = useRef(step);
+
+  useEffect(() => {
+    if (prevStepRef.current !== step) {
+      prevStepRef.current = step;
+      if (cardRef.current) {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const rect = cardRef.current.getBoundingClientRect();
+        const targetY = Math.max(0, rect.top + window.scrollY - 96);
+        const lenis = getLenis();
+        if (lenis && !prefersReducedMotion) {
+          lenis.scrollTo(targetY, { duration: 0.6 });
+        } else {
+          window.scrollTo({
+            top: targetY,
+            behavior: prefersReducedMotion ? 'instant' : 'smooth',
+          });
+        }
+      }
+    }
+  }, [step]);
 
   const initialService = (searchParams.get('service') || 'unsure') as
     | 'consulting'
@@ -217,7 +241,11 @@ export function BookingFlow() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto glass border border-border rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl">
+    <div
+      ref={cardRef}
+      id="booking-card"
+      className="w-full max-w-2xl mx-auto glass border border-border rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl scroll-mt-24"
+    >
       {packageParam && (
         <div className="mb-6 flex items-center gap-2 px-3.5 py-2 rounded-xl glass border border-green/30 bg-green/5 text-xs font-mono text-green">
           <Tag className="w-3.5 h-3.5" />

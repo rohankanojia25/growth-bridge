@@ -41,10 +41,16 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const prevPathnameRef = useRef(pathname);
+
   // Close mobile drawer on route change
   useEffect(() => {
-    setIsMobileOpen(false);
-    setIsDropdownOpen(false);
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      setIsMobileOpen((prev) => (prev ? false : prev));
+      setIsDropdownOpen((prev) => (prev ? false : prev));
+      document.body.style.overflow = '';
+    }
   }, [pathname]);
 
   // Lock body scroll when mobile menu is open
@@ -242,6 +248,10 @@ export function Header() {
                   <div key={item.href} className="space-y-1">
                     <Link
                       href={item.href}
+                      onClick={() => {
+                        setIsMobileOpen(false);
+                        document.body.style.overflow = '';
+                      }}
                       className={cn(
                         'flex items-center justify-between px-3 min-h-[44px] flex items-center justify-between rounded-xl font-display text-lg font-medium transition-colors',
                         active ? 'text-green bg-green/10' : 'text-text hover:bg-white/[0.04]'
@@ -268,7 +278,10 @@ export function Header() {
                               <Link
                                 key={service.key}
                                 href={`/services/${service.slug}`}
-                                onClick={() => setIsMobileOpen(false)}
+                                onClick={() => {
+                                  setIsMobileOpen(false);
+                                  document.body.style.overflow = '';
+                                }}
                                 className={cn(
                                   'flex items-center px-3 min-h-[44px] text-sm transition-colors rounded-lg',
                                   pathname === `/services/${service.slug}`
@@ -290,7 +303,15 @@ export function Header() {
           </div>
 
           <div className="pt-6 border-t border-border mt-6">
-            <Button href="/book-consultation" className="w-full" showArrow>
+            <Button
+              href="/book-consultation"
+              className="w-full"
+              showArrow
+              onClick={() => {
+                setIsMobileOpen(false);
+                document.body.style.overflow = '';
+              }}
+            >
               Book Free Consultation
             </Button>
             <p className="text-center text-xs text-text-dim mt-3">
