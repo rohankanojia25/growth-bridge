@@ -157,18 +157,18 @@ export default async function HomePage() {
           aria-hidden="true"
         />
 
-        <Container className="relative z-10 max-w-[1320px]">
+        <Container className="relative z-10 max-w-[1380px]">
           <div className="grid grid-cols-1 lg:grid-cols-[48%_52%] gap-10 lg:gap-8 xl:gap-12 items-center">
             {/* Left Column: Copy & Actions */}
-            <div className="w-full max-w-[600px] space-y-6">
+            <div className="w-full max-w-[620px] space-y-6">
               <Eyebrow pill>Strategy · Websites · CRM · Marketing</Eyebrow>
 
-              <h1 className="font-display font-semibold text-[clamp(2.15rem,1.35rem+2vw,3.5rem)] leading-[1.09] tracking-[-0.035em] text-text max-w-[530px]">
+              <h1 className="font-display font-semibold text-[clamp(2.35rem,1.5rem+2.2vw,3.75rem)] leading-[1.08] tracking-[-0.035em] text-text max-w-[560px]">
                 Have an idea or a business?{' '}
                 <span className="gradient-text">We help it grow.</span>
               </h1>
 
-              <p className="text-body text-text-muted text-base lg:text-[17px] max-w-[520px] leading-relaxed">
+              <p className="text-body text-text-muted text-base sm:text-lg max-w-[530px] leading-relaxed">
                 Growth Bridge Accelerator helps Indian businesses plan smarter, get online, manage every customer, and grow faster.
               </p>
 
@@ -209,7 +209,7 @@ export default async function HomePage() {
 
             {/* Right Column: Hero Visual Graphic */}
             <div className="relative w-full flex items-center justify-center lg:justify-end">
-              <div className="relative w-full max-w-[580px] sm:max-w-[640px] lg:max-w-none">
+              <div className="relative w-full max-w-[640px] sm:max-w-[700px] lg:max-w-[760px] xl:max-w-[820px] lg:-mr-2 xl:-mr-6">
                 {/* Ambient glow matching the neon visual */}
                 <div
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(25,242,140,0.18)_0%,rgba(61,214,245,0.10)_35%,rgba(123,97,255,0.05)_60%,transparent_75%)] blur-3xl pointer-events-none -z-10"
@@ -218,17 +218,17 @@ export default async function HomePage() {
                 <Image
                   src="/images/hero-visual.png"
                   alt="Growth Bridge Accelerator Connected Growth Platform"
-                  width={2064}
-                  height={1152}
+                  width={2312}
+                  height={1536}
                   priority
                   className="relative z-10 w-full h-auto object-contain"
                   style={{
                     WebkitMaskImage:
-                      'radial-gradient(ellipse 88% 88% at 55% 50%, #000 65%, transparent 100%)',
+                      'radial-gradient(ellipse 75% 65% at 50% 50%, #000 35%, rgba(0,0,0,0.8) 50%, transparent 72%)',
                     maskImage:
-                      'radial-gradient(ellipse 88% 88% at 55% 50%, #000 65%, transparent 100%)',
+                      'radial-gradient(ellipse 75% 65% at 50% 50%, #000 35%, rgba(0,0,0,0.8) 50%, transparent 72%)',
                   }}
-                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 52vw, 820px"
+                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 52vw, 840px"
                 />
               </div>
             </div>
