@@ -1,0 +1,294 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens (Tailwind v4 CSS-first) ─── */
+@theme inline {
+  --color-bg: #05060A;
+  --color-bg-raised: #0B0D14;
+  --color-surface: #10131C;
+  --color-surface-hover: #151926;
+  --color-border: rgba(255,255,255,0.08);
+  --color-border-strong: rgba(255,255,255,0.16);
+  --color-text: #F5F7FA;
+  --color-text-muted: #A3A9B8;
+  --color-text-dim: #6B7285;
+  --color-green: #19F28C;
+  --color-violet: #7B61FF;
+  --color-cyan: #3DD6F5;
+  --color-danger: #FF5C6C;
+  --font-display: var(--font-space-grotesk);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+/* ─── CSS Custom Properties (non-color tokens & aliases) ─── */
+:root {
+  --bg: #05060A;
+  --bg-raised: #0B0D14;
+  --surface: #10131C;
+  --surface-hover: #151926;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.16);
+  --text: #F5F7FA;
+  --text-muted: #A3A9B8;
+  --text-dim: #6B7285;
+  --green: #19F28C;
+  --violet: #7B61FF;
+  --cyan: #3DD6F5;
+  --danger: #FF5C6C;
+  --gradient-brand: linear-gradient(120deg, #19F28C 0%, #3DD6F5 45%, #7B61FF 100%);
+  color-scheme: dark;
+}
+
+/* ─── Global Base Styles ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: rgba(25, 242, 140, 0.25);
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ─── Skip to Content (Accessibility) ─── */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background: var(--green);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+  top: 0;
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+/* ─── Keyframes ─── */
+@keyframes orb-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(30px, -20px);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ─── Background Utilities ─── */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+.bg-noise {
+  position: relative;
+}
+
+.bg-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  z-index: 0;
+}
+
+/* ─── Orb ─── */
+.orb {
+  --orb-size: 400px;
+  --orb-color: var(--green);
+  position: absolute;
+  width: var(--orb-size);
+  height: var(--orb-size);
+  border-radius: 50%;
+  background: var(--orb-color);
+  filter: blur(120px);
+  opacity: 0.4;
+  pointer-events: none;
+  animation: orb-drift 24s ease-in-out infinite alternate;
+}
+
+.orb-green {
+  --orb-color: rgba(25, 242, 140, 0.5);
+}
+
+.orb-violet {
+  --orb-color: rgba(123, 97, 255, 0.5);
+}
+
+/* ─── Glass ─── */
+.glass {
+  background: rgba(16, 19, 28, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
+
+/* ─── Gradient Border ─── */
+.border-gradient {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--gradient-brand);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* ─── Spotlight (Card Pointer Tracking) ─── */
+.spotlight {
+  background: radial-gradient(
+    320px circle at var(--mx) var(--my),
+    rgba(25, 242, 140, 0.08),
+    transparent
+  );
+}
+
+/* ─── Gradient Text ─── */
+.gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glow ─── */
+.glow-green {
+  box-shadow: 0 0 48px rgba(25, 242, 140, 0.28);
+}
+
+/* ─── Typography Utility Classes ─── */
+.text-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 1.5rem + 6vw, 5.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+
+.text-h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 1.2rem + 3.4vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.text-h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.text-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 68ch;
+}
+
+.text-eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--green);
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Print Stylesheet ─── */
+@media print {
+  .no-print {
+    display: none;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}
