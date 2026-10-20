@@ -86,7 +86,7 @@ export function Header() {
           : 'bg-transparent'
       )}
     >
-      <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6 max-[640px]:px-4">
+      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Logo */}
         <Logo variant="full" height={32} />
 

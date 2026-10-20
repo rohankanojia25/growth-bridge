@@ -159,8 +159,8 @@ export default async function HomePage() {
           aria-hidden="true"
         />
 
-        <Container className="relative z-10 max-w-[1380px]">
-          <div className="grid grid-cols-1 lg:grid-cols-[48%_52%] gap-10 lg:gap-8 xl:gap-12 items-center">
+        <Container className="relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[46%_54%] gap-8 xl:gap-12 items-center">
             {/* Left Column: Copy & Actions */}
             <div className="w-full max-w-[620px] space-y-6">
               <Eyebrow pill>Strategy · Websites · CRM · Marketing</Eyebrow>
@@ -184,7 +184,7 @@ export default async function HomePage() {
               </div>
 
               {/* Bottom Feature Micro-Cards from the graphic */}
-              <div className="pt-6 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              <div className="hidden lg:grid grid-cols-3 gap-4 pt-6 border-t border-white/10 text-xs">
                 <div className="flex items-start gap-2.5">
                   <Globe className="w-4 h-4 text-cyan mt-0.5 shrink-0" />
                   <div>
@@ -210,7 +210,7 @@ export default async function HomePage() {
             </div>
 
             {/* Right Column: Monevi-Style Interactive Glass Dashboard */}
-            <div className="relative w-full flex items-center justify-center lg:justify-end">
+            <div className="relative w-full flex items-center justify-center lg:justify-end mt-6 sm:mt-8 lg:mt-0">
               <HeroDashboardPreview />
             </div>
           </div>
