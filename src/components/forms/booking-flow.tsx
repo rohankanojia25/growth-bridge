@@ -217,7 +217,7 @@ export function BookingFlow() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto glass border border-border rounded-3xl p-6 sm:p-10 shadow-2xl">
+    <div className="w-full max-w-2xl mx-auto glass border border-border rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl">
       {packageParam && (
         <div className="mb-6 flex items-center gap-2 px-3.5 py-2 rounded-xl glass border border-green/30 bg-green/5 text-xs font-mono text-green">
           <Tag className="w-3.5 h-3.5" />
@@ -227,15 +227,36 @@ export function BookingFlow() {
 
       {/* Progress Steps Header */}
       <div className="mb-8" aria-label="Booking steps">
-        <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono mb-3">
-          <span className={cn(step >= 1 ? 'text-green' : 'text-text-dim')}>01. Date</span>
-          <span className="h-px w-3 sm:w-8 bg-border" />
-          <span className={cn(step >= 2 ? 'text-green' : 'text-text-dim')}>02. Time</span>
-          <span className="h-px w-3 sm:w-8 bg-border" />
-          <span className={cn(step >= 3 ? 'text-green' : 'text-text-dim')}>03. Details</span>
-          <span className="h-px w-3 sm:w-8 bg-border" />
-          <span className={cn(step >= 4 ? 'text-green' : 'text-text-dim')}>04. Confirm</span>
+        {/* Full labels from 640px */}
+        <div className="hidden sm:flex items-center justify-between text-xs font-mono mb-3">
+          <span className={cn(step >= 1 ? 'text-green font-semibold' : 'text-text-dim')}>01. Date</span>
+          <span className="h-px w-6 lg:w-8 bg-border" />
+          <span className={cn(step >= 2 ? 'text-green font-semibold' : 'text-text-dim')}>02. Time</span>
+          <span className="h-px w-6 lg:w-8 bg-border" />
+          <span className={cn(step >= 3 ? 'text-green font-semibold' : 'text-text-dim')}>03. Details</span>
+          <span className="h-px w-6 lg:w-8 bg-border" />
+          <span className={cn(step >= 4 ? 'text-green font-semibold' : 'text-text-dim')}>04. Confirm</span>
         </div>
+
+        {/* Step numbers and active step name below 640px */}
+        <div className="sm:hidden flex items-center justify-between text-xs font-mono mb-3">
+          <div className="flex items-center gap-1.5 text-text-dim">
+            <span className={cn('px-2 py-0.5 rounded-full text-[11px]', step === 1 ? 'bg-green/15 text-green font-bold border border-green/30' : step > 1 ? 'text-green' : '')}>01</span>
+            <span>·</span>
+            <span className={cn('px-2 py-0.5 rounded-full text-[11px]', step === 2 ? 'bg-green/15 text-green font-bold border border-green/30' : step > 2 ? 'text-green' : '')}>02</span>
+            <span>·</span>
+            <span className={cn('px-2 py-0.5 rounded-full text-[11px]', step === 3 ? 'bg-green/15 text-green font-bold border border-green/30' : step > 3 ? 'text-green' : '')}>03</span>
+            <span>·</span>
+            <span className={cn('px-2 py-0.5 rounded-full text-[11px]', step === 4 ? 'bg-green/15 text-green font-bold border border-green/30' : '')}>04</span>
+          </div>
+          <span className="text-green font-semibold text-[11px]">
+            {step === 1 && 'Date'}
+            {step === 2 && 'Time Slot'}
+            {step === 3 && 'Details'}
+            {step === 4 && 'Confirm'}
+          </span>
+        </div>
+
         <div className="h-1.5 w-full bg-surface rounded-full overflow-hidden">
           <div
             className="h-full bg-green transition-all duration-300 rounded-full"
@@ -263,7 +284,7 @@ export function BookingFlow() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 sm:gap-3">
             {availableDates.map((item) => {
               const isSelected = selectedDate === item.dateStr;
               return (
@@ -463,7 +484,7 @@ export function BookingFlow() {
               id="booking-budget"
               label="Estimated Monthly Marketing Budget"
               options={BUDGET_OPTIONS}
-              placeholder="Select budget range"
+              placeholder="Select budget"
               error={errors.budget_range?.message}
               {...register('budget_range')}
             />

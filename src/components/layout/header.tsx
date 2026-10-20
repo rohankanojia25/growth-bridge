@@ -28,6 +28,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -86,7 +87,7 @@ export function Header() {
           : 'bg-transparent'
       )}
     >
-      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
         {/* Left: Logo */}
         <Logo variant="full" height={32} />
 
@@ -227,7 +228,7 @@ export function Header() {
         {/* Content Pane */}
         <nav
           className={cn(
-            'relative h-[calc(100dvh-72px)] glass border-r border-border overflow-y-auto p-6 flex flex-col justify-between transition-transform duration-300 max-w-[340px] w-full',
+            'relative h-[calc(100dvh-72px)] glass border-r border-border overflow-y-auto p-6 flex flex-col justify-between transition-transform duration-300 max-w-[min(340px,calc(100vw-32px))] w-full',
             isMobileOpen ? 'translate-x-0 pointer-events-auto' : '-translate-x-full pointer-events-none'
           )}
           aria-label="Mobile navigation links"
@@ -251,21 +252,35 @@ export function Header() {
                     </Link>
 
                     {item.hasDropdown && (
-                      <div className="pl-4 space-y-1 border-l border-border ml-3 my-1">
-                        {SERVICES.map((service) => (
-                          <Link
-                            key={service.key}
-                            href={`/services/${service.slug}`}
-                            className={cn(
-                              'flex items-center px-3 min-h-[44px] text-sm transition-colors rounded-lg',
-                              pathname === `/services/${service.slug}`
-                                ? 'text-green font-medium'
-                                : 'text-text-muted hover:text-text'
-                            )}
-                          >
-                            {service.title}
-                          </Link>
-                        ))}
+                      <div className="space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                          className="flex items-center justify-between w-full px-3 py-2 text-xs font-mono uppercase tracking-wider text-text-dim hover:text-text"
+                          aria-expanded={mobileServicesOpen}
+                        >
+                          <span>All Services</span>
+                          <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', mobileServicesOpen && 'rotate-180 text-green')} />
+                        </button>
+                        {mobileServicesOpen && (
+                          <div className="pl-4 space-y-1 border-l border-border ml-3 my-1">
+                            {SERVICES.map((service) => (
+                              <Link
+                                key={service.key}
+                                href={`/services/${service.slug}`}
+                                onClick={() => setIsMobileOpen(false)}
+                                className={cn(
+                                  'flex items-center px-3 min-h-[44px] text-sm transition-colors rounded-lg',
+                                  pathname === `/services/${service.slug}`
+                                    ? 'text-green font-medium'
+                                    : 'text-text-muted hover:text-text'
+                                )}
+                              >
+                                {service.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

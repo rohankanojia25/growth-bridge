@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { quickLeadSchema, type QuickLeadInput, SERVICE_OPTIONS } from '@/lib/schemas';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { getStoredUTM } from '@/components/layout/utm-tracker';
 import { trackAnalyticsEvent } from '@/components/layout/analytics';
@@ -72,48 +74,44 @@ export function HomeQuickForm() {
       {/* Honeypot */}
       <input type="text" className="sr-only" tabIndex={-1} aria-hidden="true" autoComplete="off" {...register('website')} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div>
-          <input
-            type="text"
-            placeholder="Your Name *"
-            className="h-12 w-full rounded-xl bg-bg border border-border px-4 text-text placeholder:text-text-dim text-base focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
-            {...register('name')}
-          />
-          {errors.name && (
-            <span className="text-xs text-danger mt-1 block">{errors.name.message}</span>
-          )}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <Input
+          id="home-quick-name"
+          label="Full Name *"
+          placeholder="e.g. Rajesh Kumar"
+          error={errors.name?.message}
+          {...register('name')}
+        />
 
-        <div>
-          <input
-            type="tel"
-            placeholder="Phone Number *"
-            className="h-12 w-full rounded-xl bg-bg border border-border px-4 text-text placeholder:text-text-dim text-base focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
-            {...register('phone')}
-          />
-          {errors.phone && (
-            <span className="text-xs text-danger mt-1 block">{errors.phone.message}</span>
-          )}
-        </div>
+        <Input
+          id="home-quick-phone"
+          type="tel"
+          label="Mobile Number *"
+          placeholder="10-digit number"
+          error={errors.phone?.message}
+          {...register('phone')}
+        />
 
-        <div>
-          <select
-            className="h-12 w-full rounded-xl bg-bg border border-border px-3 text-text text-base focus:border-green focus:outline-none focus:ring-[3px] focus:ring-green/25"
-            {...register('service')}
-          >
-            {SERVICE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          id="home-quick-service"
+          label="Service Interested In *"
+          options={SERVICE_OPTIONS}
+          error={errors.service?.message}
+          {...register('service')}
+        />
       </div>
 
-      <Button type="submit" className="w-full sm:w-auto" loading={isSubmitting} showArrow>
-        Request Free Growth Assessment
-      </Button>
+      <div className="pt-1">
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full sm:w-auto min-h-[52px] h-[52px] px-8 text-base font-semibold"
+          loading={isSubmitting}
+          showArrow
+        >
+          {isSubmitting ? 'Submitting...' : 'Request Free Growth Assessment'}
+        </Button>
+      </div>
     </form>
   );
 }

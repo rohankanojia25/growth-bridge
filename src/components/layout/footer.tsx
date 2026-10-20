@@ -39,7 +39,7 @@ export function Footer() {
 
   return (
     <footer className="relative bg-bg-raised border-t border-border overflow-hidden no-print">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 py-14 sm:py-16 md:py-20 relative z-10">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 py-14 sm:py-16 md:py-20 relative z-10">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Col 1: Brand & Positioning */}
           <div className="space-y-4">

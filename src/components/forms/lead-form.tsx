@@ -179,7 +179,7 @@ export function LeadForm({ defaultService, className }: LeadFormProps) {
             id="lead-budget"
             label="Monthly Marketing Budget"
             options={BUDGET_OPTIONS}
-            placeholder="Select estimated budget"
+            placeholder="Select budget"
             error={errors.budget_range?.message}
             {...register('budget_range')}
           />

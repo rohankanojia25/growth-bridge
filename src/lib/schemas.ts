@@ -72,7 +72,7 @@ export const bookingSchema = z.object({
 export type BookingInput = z.infer<typeof bookingSchema>;
 
 export const BUDGET_OPTIONS = [
-  { value: 'below_10k', label: 'Below ₹10,00,000' },
+  { value: 'below_10k', label: 'Below ₹10,000' },
   { value: '10k_50k', label: '₹10,000 to ₹50,000' },
   { value: '50k_2l', label: '₹50,000 to ₹2,00,000' },
   { value: 'above_2l', label: 'Above ₹2,00,000' },

@@ -123,7 +123,7 @@ export default async function PricingPage() {
             </div>
           ) : (
             /* Render Published Packages */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
               {publishedPackages.map((pkg) => {
                 const formattedPrice = pkg.price_inr
                   ? formatINR(pkg.price_inr)

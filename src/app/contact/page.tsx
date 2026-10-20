@@ -66,17 +66,8 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Right Column: Contact Cards & Office Details (5 cols) */}
+            {/* Right Column: Info Card (5 cols on lg, below form on mobile/tablet) */}
             <div className="lg:col-span-5 space-y-6">
-              {/* Optional Contact Visual Slot */}
-              <div className="rounded-3xl overflow-hidden border border-border bg-surface shadow-xl">
-                <SiteImage
-                  slot="contact-visual"
-                  className="w-full aspect-[4/3] sm:aspect-[16/10]"
-                  rounded
-                />
-              </div>
-
               {/* Direct Channels Card */}
               <div className="rounded-3xl glass border border-border p-7 space-y-6">
                 <div>
@@ -84,21 +75,21 @@ export default function ContactPage() {
                   <h3 className="text-h3 text-xl text-text mt-1">Delhi Headquarters</h3>
                 </div>
 
-                <div className="space-y-4 text-sm text-text-muted">
-                  <div className="flex items-start gap-3">
+                <div className="divide-y divide-border/40 text-sm text-text-muted">
+                  <div className="flex items-start gap-3.5 py-3 first:pt-0">
                     <MapPin className="w-5 h-5 text-green mt-0.5 shrink-0" />
                     <div>
-                      <div className="font-semibold text-text">Office Address</div>
-                      <div className="text-xs leading-relaxed mt-1">
+                      <div className="font-semibold text-text text-sm">Office Address</div>
+                      <div className="text-xs leading-relaxed mt-0.5">
                         {BUSINESS_INFO.address.full}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <Phone className="w-5 h-5 text-green mt-2.5 shrink-0" />
+                  <div className="flex items-start gap-3.5 py-3">
+                    <Phone className="w-5 h-5 text-green mt-0.5 shrink-0" />
                     <div>
-                      <div className="font-semibold text-text">Direct Phone</div>
+                      <div className="font-semibold text-text text-sm">Direct Phone</div>
                       <a
                         href={`tel:${BUSINESS_INFO.phone}`}
                         className="text-xs text-text hover:text-green mt-0.5 inline-flex items-center min-h-[44px]"
@@ -108,12 +99,14 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <MessageCircle className="w-5 h-5 text-green mt-2.5 shrink-0" />
+                  <div className="flex items-start gap-3.5 py-3">
+                    <MessageCircle className="w-5 h-5 text-green mt-0.5 shrink-0" />
                     <div>
-                      <div className="font-semibold text-text">WhatsApp Inquiries</div>
+                      <div className="font-semibold text-text text-sm">WhatsApp Inquiries</div>
                       <a
                         href={BUSINESS_INFO.whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-xs text-green hover:underline mt-0.5 inline-flex items-center min-h-[44px]"
                       >
                         Start WhatsApp Chat (+91 88838 38363)
@@ -121,11 +114,11 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-3.5 py-3 last:pb-0">
                     <Clock className="w-5 h-5 text-green mt-0.5 shrink-0" />
                     <div>
-                      <div className="font-semibold text-text">Working Hours</div>
-                      <div className="text-xs text-text-muted mt-1">
+                      <div className="font-semibold text-text text-sm">Working Hours</div>
+                      <div className="text-xs text-text-muted mt-0.5">
                         {BUSINESS_INFO.hours}
                       </div>
                     </div>

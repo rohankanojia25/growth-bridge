@@ -185,7 +185,7 @@ export default function AdminClientLogosPage() {
         </form>
       ) : (
         <div className="rounded-2xl glass border border-border overflow-hidden">
-          <table className="w-full text-left text-xs">
+          <div className="overflow-x-auto w-full"><table className="w-full text-left text-xs">
             <thead className="border-b border-border text-text-dim uppercase font-mono tracking-wider bg-surface/50">
               <tr>
                 <th className="py-3 px-4">Preview</th>
@@ -227,7 +227,7 @@ export default function AdminClientLogosPage() {
                 ))
               )}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

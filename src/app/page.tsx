@@ -144,7 +144,7 @@ export default async function HomePage() {
       {/* =========================================================================
           SECTION 2: HERO
           ========================================================================= */}
-      <section className="relative min-h-0 lg:min-h-[calc(100vh-72px)] flex flex-col justify-center pt-3 pb-10 sm:pt-6 sm:pb-14 lg:py-16 overflow-hidden">
+      <section className="relative min-h-0 lg:min-h-[calc(100dvh-72px)] flex flex-col justify-center pt-3 pb-10 sm:pt-6 sm:pb-14 lg:py-16 overflow-hidden">
         {/* Background Grid and Noise */}
         <div className="absolute inset-0 bg-grid pointer-events-none" />
         <div className="absolute inset-0 bg-noise pointer-events-none" />
@@ -251,7 +251,7 @@ export default async function HomePage() {
             description="When you divide growth across different agencies and freelancers, nobody owns the end outcome."
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8 mb-12">
             {/* Before Card */}
             <div className="rounded-[20px] bg-surface/40 border border-dashed border-white/15 p-8 relative">
               <div className="flex items-center gap-2 text-danger font-mono text-xs uppercase tracking-wider mb-4">
@@ -361,7 +361,7 @@ export default async function HomePage() {
             description="Explore our specialized services built specifically for owner-operated Indian businesses."
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Card 1: Consulting (Spans 2 columns on desktop) */}
             <Card className="lg:col-span-2 flex flex-col justify-between" spotlight>
               <div>
@@ -578,16 +578,16 @@ export default async function HomePage() {
             description="Our frameworks are optimized for local service providers, retail showrooms, clinics, and manufacturing firms."
           />
 
-          <div className="flex flex-wrap gap-3.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-wrap gap-3 sm:gap-3.5">
             {INDUSTRIES.map((ind) => {
               const Icon = ind.icon;
               return (
                 <div
                   key={ind.name}
-                  className="glass rounded-full px-5 py-3 border border-border hover:border-green/50 transition-colors flex items-center gap-3 group"
+                  className="glass rounded-full px-4 py-3 sm:px-5 border border-border hover:border-green/50 transition-colors flex items-center justify-center sm:justify-start gap-2.5 sm:gap-3 group min-h-[52px] text-center sm:text-left [&:last-child:nth-child(odd)]:col-span-2 sm:[&:last-child:nth-child(odd)]:col-span-1"
                 >
-                  <Icon className="w-4 h-4 text-green transition-transform group-hover:scale-110" />
-                  <span className="font-display font-medium text-sm text-text">
+                  <Icon className="w-4 h-4 text-green transition-transform group-hover:scale-110 shrink-0" />
+                  <span className="font-display font-medium text-xs sm:text-sm text-text leading-tight">
                     {ind.name}
                   </span>
                 </div>
@@ -756,21 +756,23 @@ export default async function HomePage() {
                 <HomeQuickForm />
               </div>
 
-              {/* Direct Phone & WhatsApp buttons */}
-              <div className="pt-4 flex flex-wrap items-center gap-4 text-xs font-mono">
+              {/* Direct Phone & WhatsApp buttons (16px below submit button) */}
+              <div className="mt-4 grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 w-full">
                 <a
                   href={`tel:${BUSINESS_INFO.phone}`}
-                  className="inline-flex items-center gap-2 px-4 min-h-[44px] rounded-full glass border border-white/10 text-text hover:text-green transition-colors"
+                  className="inline-flex items-center justify-center gap-2 min-h-[52px] h-[52px] w-full px-6 rounded-full border border-border-strong bg-transparent text-text hover:bg-white/[0.06] font-semibold text-base font-body active:scale-[0.98] transition-all"
                 >
-                  <Phone className="w-3.5 h-3.5 text-green" />
+                  <Phone className="w-4 h-4 text-green shrink-0" />
                   <span>Call {BUSINESS_INFO.phoneFormatted}</span>
                 </a>
 
                 <a
                   href={BUSINESS_INFO.whatsappUrl}
-                  className="inline-flex items-center gap-2 px-4 min-h-[44px] rounded-full glass border border-green/30 text-green hover:bg-green/10 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 min-h-[52px] h-[52px] w-full px-6 rounded-full border border-green/40 bg-green/10 text-green hover:bg-green/20 font-semibold text-base font-body active:scale-[0.98] transition-all"
                 >
-                  <MessageCircle className="w-3.5 h-3.5" />
+                  <MessageCircle className="w-4 h-4 text-green shrink-0" />
                   <span>Direct WhatsApp Chat</span>
                 </a>
               </div>

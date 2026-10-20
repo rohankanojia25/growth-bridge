@@ -53,7 +53,7 @@ export default function BookConsultationPage() {
               Pick a 30-minute slot that fits your schedule. We review your current operations, vendor overlap, and customer conversion pipeline with zero sales pressure.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-2 text-xs font-mono text-text">
+            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 pt-2 text-xs font-mono text-text">
               <span className="flex items-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-green" />
                 <span>30 Minutes Focused Review</span>
