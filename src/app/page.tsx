@@ -209,7 +209,7 @@ export default async function HomePage() {
 
             {/* Right Column: Hero Visual Graphic */}
             <div className="lg:col-span-6 xl:col-span-7 relative w-full flex items-center justify-center lg:justify-end">
-              <div className="relative w-full max-w-[640px] lg:max-w-none lg:w-[110%] lg:-mr-6 xl:-mr-10">
+              <div className="relative w-full max-w-[640px] lg:max-w-[740px] xl:max-w-[820px]">
                 {/* Ambient glow matching the neon visual */}
                 <div
                   className="absolute -inset-6 rounded-full bg-green/15 opacity-40 blur-3xl pointer-events-none"
@@ -218,11 +218,11 @@ export default async function HomePage() {
                 <Image
                   src="/images/hero-visual.png"
                   alt="Growth Bridge Accelerator Connected Growth Platform"
-                  width={562}
-                  height={461}
+                  width={1376}
+                  height={768}
                   priority
                   className="relative z-10 w-full h-auto object-contain drop-shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
-                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 760px"
+                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 820px"
                 />
               </div>
             </div>
