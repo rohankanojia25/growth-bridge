@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
 export const alt = 'Growth Bridge Accelerator — Business Consulting & Marketing, Delhi';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -17,24 +16,23 @@ export default async function Image() {
           alignItems: 'flex-start',
           justifyContent: 'space-between',
           backgroundColor: '#05060A',
-          backgroundImage:
-            'radial-gradient(circle at 80% 20%, rgba(25, 242, 140, 0.15) 0%, transparent 40%), radial-gradient(circle at 20% 80%, rgba(123, 97, 255, 0.18) 0%, transparent 45%)',
           padding: '80px',
-          fontFamily: 'sans-serif',
         }}
       >
         {/* Top Logo / Eyebrow */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <div
             style={{
-              width: '12px',
-              height: '12px',
+              width: '14px',
+              height: '14px',
               borderRadius: '999px',
               backgroundColor: '#19F28C',
+              marginRight: '16px',
             }}
           />
           <div
             style={{
+              display: 'flex',
               fontSize: '18px',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
@@ -47,30 +45,24 @@ export default async function Image() {
         </div>
 
         {/* Center Title */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div
             style={{
+              display: 'flex',
               fontSize: '64px',
               fontWeight: 800,
               lineHeight: 1.1,
               letterSpacing: '-0.03em',
               color: '#F5F7FA',
-              maxWidth: '900px',
+              maxWidth: '960px',
+              marginBottom: '20px',
             }}
           >
-            One partner for your{' '}
-            <span
-              style={{
-                backgroundImage: 'linear-gradient(120deg, #19F28C, #3DD6F5, #7B61FF)',
-                backgroundClip: 'text',
-                color: 'transparent',
-              }}
-            >
-              growth.
-            </span>
+            One partner for your growth.
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: '28px',
               color: '#A3A9B8',
               lineHeight: 1.4,
@@ -94,6 +86,7 @@ export default async function Image() {
         >
           <div
             style={{
+              display: 'flex',
               fontSize: '24px',
               fontWeight: 700,
               color: '#F5F7FA',
@@ -104,6 +97,7 @@ export default async function Image() {
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: '20px',
               color: '#19F28C',
               fontWeight: 600,
