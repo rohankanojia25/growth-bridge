@@ -163,11 +163,8 @@ export default async function HomePage() {
               <Eyebrow pill>Strategy · Websites · CRM · Marketing</Eyebrow>
 
               <h1 className="text-display">
-                One partner for your{' '}
-                <span className="gradient-text">growth.</span>
-                <span className="block text-text-muted mt-2 text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight">
-                  Strategy, website, CRM and marketing, connected.
-                </span>
+                Have an idea or a business?{' '}
+                <span className="gradient-text">We help it grow.</span>
               </h1>
 
               <p className="text-body text-text-muted text-lg sm:text-xl max-w-2xl leading-relaxed">
