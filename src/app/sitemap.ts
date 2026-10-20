@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { SERVICES } from '@/lib/utils';
 import { createPublicSupabaseClient } from '@/lib/supabase/server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -12,28 +13,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/services`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/get-started`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/contact`,
+      url: `${baseUrl}/services`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/pricing`,
@@ -46,6 +35,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/book-consultation`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/privacy-policy`,
@@ -61,11 +68,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Query published case studies from Supabase
+  // Service routes
+  const serviceRoutes: MetadataRoute.Sitemap = SERVICES.map((service) => ({
+    url: `${baseUrl}/services/${service.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  }));
+
+  // Query published blog posts and case studies from Supabase
+  let blogRoutes: MetadataRoute.Sitemap = [];
   let caseStudyRoutes: MetadataRoute.Sitemap = [];
 
   try {
     const supabase = createPublicSupabaseClient();
+
+    const { data: posts } = await supabase
+      .from('blog_posts')
+      .select('slug, updated_at')
+      .eq('is_published', true);
+
+    if (posts) {
+      blogRoutes = (posts as Array<{ slug: string; updated_at: string }>).map((post) => ({
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified: new Date(post.updated_at),
+        changeFrequency: 'monthly',
+        priority: 0.7,
+      }));
+    }
+
     const { data: cases } = await supabase
       .from('case_studies')
       .select('slug, updated_at')
@@ -83,5 +114,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Database query failed during static export or build
   }
 
-  return [...staticRoutes, ...caseStudyRoutes];
+  return [...staticRoutes, ...serviceRoutes, ...blogRoutes, ...caseStudyRoutes];
 }

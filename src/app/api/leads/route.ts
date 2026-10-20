@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { leadSchema, getStartedSchema } from '@/lib/schemas';
+import { leadSchema } from '@/lib/schemas';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { sendEmail, ADMIN_NOTIFICATION_EMAIL } from '@/lib/email/send';
@@ -17,36 +17,25 @@ export async function POST(request: NextRequest) {
     const isAllowed = await checkRateLimit(ip, 'leads');
     if (!isAllowed) {
       return NextResponse.json(
-        { error: 'Too many requests. Please wait a little or message us on WhatsApp directly.' },
+        { error: 'Too many requests. Please wait an hour or contact us on WhatsApp directly.' },
         { status: 429 }
       );
     }
 
     // 2. Parse & Validate Payload
     const body = await request.json();
+    const result = leadSchema.safeParse(body);
 
-    // Check if get_started or standard lead
-    const isGetStarted = body.source === 'get_started' || body.lead_type !== undefined;
-    let validData: any;
-
-    if (isGetStarted) {
-      const result = getStartedSchema.safeParse(body);
-      if (!result.success) {
-        const firstError = result.error.issues?.[0]?.message || 'Invalid form data';
-        return NextResponse.json({ error: firstError }, { status: 400 });
-      }
-      validData = result.data;
-    } else {
-      const result = leadSchema.safeParse(body);
-      if (!result.success) {
-        const firstError = result.error.issues?.[0]?.message || 'Invalid form data';
-        return NextResponse.json({ error: firstError }, { status: 400 });
-      }
-      validData = result.data;
+    if (!result.success) {
+      const firstError = result.error.issues?.[0]?.message || 'Invalid form data';
+      return NextResponse.json({ error: firstError }, { status: 400 });
     }
 
+    const data = result.data;
+
     // 3. Honeypot check
-    if (validData.website && validData.website.length > 0) {
+    if (data.website && data.website.length > 0) {
+      // Silently discard spam bot submissions
       return NextResponse.json({ success: true, id: 'discarded' });
     }
 
@@ -54,64 +43,51 @@ export async function POST(request: NextRequest) {
     const supabase = createServiceRoleClient();
 
     const insertPayload = {
-      name: validData.name,
-      phone: validData.phone,
-      email: validData.email || null,
-      business_name: validData.business_name || null,
-      service: validData.service || 'unsure',
-      budget_range: validData.budget_range || null,
-      message: validData.message || null,
-      package_id: validData.package_id || null,
-      source: validData.source || 'get_started',
+      name: data.name,
+      phone: data.phone,
+      email: data.email || null,
+      business_name: data.business_name || null,
+      service: data.service,
+      budget_range: data.budget_range || null,
+      message: data.message || null,
+      package_id: data.package_id || null,
+      source: data.source,
       status: 'new',
       notes: [],
-      utm_source: validData.utm_source || null,
-      utm_medium: validData.utm_medium || null,
-      utm_campaign: validData.utm_campaign || null,
-      utm_term: validData.utm_term || null,
-      utm_content: validData.utm_content || null,
-      referrer: validData.referrer || null,
-      landing_path: validData.landing_path || null,
-      // Revision v3 fields
-      lead_type: validData.lead_type || 'idea',
-      idea_summary: validData.idea_summary || null,
-      idea_stage: validData.idea_stage || null,
-      starting_budget: validData.starting_budget || null,
-      wants_nda: Boolean(validData.wants_nda),
-      challenge: validData.challenge || null,
-      city: validData.city || 'Delhi',
-      link_url: validData.link_url || null,
+      utm_source: data.utm_source || null,
+      utm_medium: data.utm_medium || null,
+      utm_campaign: data.utm_campaign || null,
+      utm_term: data.utm_term || null,
+      utm_content: data.utm_content || null,
+      referrer: data.referrer || null,
+      landing_path: data.landing_path || null,
     };
 
     const { data: lead, error: insertError } = await supabase
       .from('leads')
       .insert(insertPayload)
       .select('id')
-      .maybeSingle();
+      .single();
 
     if (insertError) {
       console.error('Lead insertion error:', insertError);
+      return NextResponse.json(
+        { error: 'Failed to record your enquiry. Please contact us via phone or WhatsApp.' },
+        { status: 500 }
+      );
     }
 
     // 5. Send Admin Notification Email
     try {
       const adminMail = adminLeadNotification({
-        name: validData.name,
-        phone: validData.phone,
-        email: validData.email || undefined,
-        business_name: validData.business_name || undefined,
-        service: validData.service,
-        budget_range: validData.budget_range || undefined,
-        message: validData.message || undefined,
-        source: validData.source || 'get_started',
-        lead_type: validData.lead_type,
-        idea_summary: validData.idea_summary,
-        idea_stage: validData.idea_stage,
-        starting_budget: validData.starting_budget,
-        wants_nda: validData.wants_nda,
-        challenge: validData.challenge,
-        city: validData.city,
-        link_url: validData.link_url,
+        name: data.name,
+        phone: data.phone,
+        email: data.email || undefined,
+        business_name: data.business_name || undefined,
+        service: data.service,
+        budget_range: data.budget_range || undefined,
+        message: data.message || undefined,
+        source: data.source,
       });
 
       await sendEmail({
@@ -119,64 +95,56 @@ export async function POST(request: NextRequest) {
         subject: adminMail.subject,
         html: adminMail.html,
       });
-    } catch (mailErr) {
-      console.error('Admin email notification failed:', mailErr);
+    } catch (e) {
+      console.error('Admin email failed:', e);
     }
 
-    // 6. Send Client Auto-Reply Email (only if valid email provided)
-    if (validData.email && validData.email.trim().length > 0) {
+    // 6. Send Auto-Reply to Lead if email was provided
+    if (data.email) {
       try {
-        const autoReply = leadAutoReply(validData.name);
+        const autoReply = leadAutoReply(data.name);
         await sendEmail({
-          to: validData.email,
+          to: data.email,
           subject: autoReply.subject,
           html: autoReply.html,
         });
-      } catch (replyErr) {
-        console.error('Auto-reply email failed:', replyErr);
+      } catch (e) {
+        console.error('Auto reply email failed:', e);
       }
     }
 
-    // 7. Optional Lead Webhook dispatch
+    // 7. Optional Webhook dispatch (5 second timeout, logged & non-blocking)
     const webhookUrl = process.env.LEAD_WEBHOOK_URL;
     if (webhookUrl) {
       try {
-        await fetch(webhookUrl, {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: 'lead.created',
-            lead: {
-              id: lead?.id || 'pending',
-              ...insertPayload,
-              created_at: new Date().toISOString(),
-            },
-          }),
-          signal: AbortSignal.timeout(3000),
-        });
-      } catch (webhookErr) {
-        console.error('Lead webhook dispatch failed:', webhookErr);
+          body: JSON.stringify({ event: 'lead.created', lead }),
+          signal: controller.signal,
+        })
+          .then(() => clearTimeout(timeoutId))
+          .catch((err) => console.warn('Lead webhook failed:', err));
+      } catch (e) {
+        console.warn('Webhook trigger error:', e);
       }
     }
 
-    const response = NextResponse.json({
-      success: true,
-      id: lead?.id || 'recorded',
-    });
-
-    // Set cookie indicating submission
-    response.cookies.set('gba_lead_submitted', 'true', {
-      path: '/',
-      maxAge: 86400,
+    // 8. Construct response and set post-submit cookie
+    // Cookie: gba_submitted=lead, httpOnly, SameSite=Lax, maxAge: 600 seconds (10 mins)
+    const response = NextResponse.json({ success: true, id: lead.id });
+    response.cookies.set('gba_submitted', 'lead', {
+      httpOnly: true,
       sameSite: 'lax',
+      path: '/',
+      maxAge: 600,
     });
 
     return response;
-  } catch (err: unknown) {
-    console.error('Unhandled lead POST error:', err);
-    return NextResponse.json(
-      { error: 'Something went wrong. Please call or WhatsApp us directly.' },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error('Lead route error:', err);
+    return NextResponse.json({ error: 'Server error processing enquiry.' }, { status: 500 });
   }
 }

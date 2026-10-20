@@ -21,6 +21,7 @@ import {
 const ADMIN_NAV = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Leads', href: '/admin/leads', icon: Users },
+  { label: 'Bookings', href: '/admin/bookings', icon: Calendar },
   { label: 'Packages', href: '/admin/packages', icon: Package },
   { label: 'Case Studies', href: '/admin/case-studies', icon: FileText },
   { label: 'Testimonials', href: '/admin/testimonials', icon: MessageSquareQuote },

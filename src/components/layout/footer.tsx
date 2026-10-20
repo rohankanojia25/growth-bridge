@@ -4,19 +4,16 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/ui/logo';
 import { Toast } from '@/components/ui/toast';
-import { BUSINESS_INFO } from '@/lib/utils';
+import { BUSINESS_INFO, SERVICES } from '@/lib/utils';
 import { Phone, MessageCircle, MapPin, Clock, Copy, Mail } from 'lucide-react';
 
-interface FooterProps {
-  hasCaseStudies?: boolean;
-  hasPricing?: boolean;
-}
-
-const SERVICE_LINKS = [
-  { label: '01. Plan: Business Strategy', href: '/services#plan' },
-  { label: '02. Build: Website & Brand', href: '/services#build' },
-  { label: '03. Market: Lead Generation', href: '/services#market' },
-  { label: '04. Retain: Growth & CRM', href: '/services#grow' },
+const COMPANY_LINKS = [
+  { label: 'About', href: '/about' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Case Studies', href: '/case-studies' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Book Consultation', href: '/book-consultation' },
 ];
 
 const LEGAL_LINKS = [
@@ -24,7 +21,7 @@ const LEGAL_LINKS = [
   { label: 'Terms & Conditions', href: '/terms-and-conditions' },
 ];
 
-export function Footer({ hasCaseStudies = false, hasPricing = false }: FooterProps) {
+export function Footer() {
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
 
@@ -40,15 +37,6 @@ export function Footer({ hasCaseStudies = false, hasPricing = false }: FooterPro
 
   const currentYear = new Date().getFullYear();
 
-  const companyLinks = [
-    { label: 'Services', href: '/services' },
-    { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Get Started', href: '/get-started' },
-    ...(hasPricing ? [{ label: 'Pricing', href: '/pricing' }] : []),
-    ...(hasCaseStudies ? [{ label: 'Case Studies', href: '/case-studies' }] : []),
-  ];
-
   return (
     <footer className="relative bg-bg-raised border-t border-border overflow-hidden no-print">
       <div className="mx-auto max-w-[1200px] px-6 max-[640px]:px-4 py-16 md:py-20 relative z-10">
@@ -57,7 +45,7 @@ export function Footer({ hasCaseStudies = false, hasPricing = false }: FooterPro
           <div className="space-y-4">
             <Logo variant="full" height={30} />
             <p className="text-sm text-text-muted leading-relaxed">
-              A business consultancy and marketing team in Delhi that helps ideas become businesses and businesses grow.
+              One partner for strategy, website, CRM, and marketing. Bridging your business to growth.
             </p>
             <div className="pt-2">
               <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs text-text-muted">
@@ -69,15 +57,15 @@ export function Footer({ hasCaseStudies = false, hasPricing = false }: FooterPro
 
           {/* Col 2: Services */}
           <div>
-            <div className="text-eyebrow mb-4">Our Services</div>
+            <div className="text-eyebrow mb-4">Services</div>
             <ul className="space-y-2.5">
-              {SERVICE_LINKS.map((link) => (
-                <li key={link.href}>
+              {SERVICES.map((s) => (
+                <li key={s.key}>
                   <Link
-                    href={link.href}
-                    className="text-sm text-text-muted hover:text-green transition-colors"
+                    href={`/services/${s.slug}`}
+                    className="text-sm text-text-muted hover:text-text transition-colors"
                   >
-                    {link.label}
+                    {s.title}
                   </Link>
                 </li>
               ))}
@@ -88,11 +76,11 @@ export function Footer({ hasCaseStudies = false, hasPricing = false }: FooterPro
           <div>
             <div className="text-eyebrow mb-4">Company</div>
             <ul className="space-y-2.5">
-              {companyLinks.map((link) => (
+              {COMPANY_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-text-muted hover:text-green transition-colors"
+                    className="text-sm text-text-muted hover:text-text transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -101,78 +89,104 @@ export function Footer({ hasCaseStudies = false, hasPricing = false }: FooterPro
             </ul>
           </div>
 
-          {/* Col 4: Contact & Office */}
-          <div className="space-y-3">
-            <div className="text-eyebrow mb-4">Delhi Office</div>
-            <div className="space-y-2 text-sm text-text-muted">
-              <div className="flex items-start gap-2.5">
-                <MapPin className="h-4 w-4 text-green shrink-0 mt-1" />
-                <span className="text-xs leading-relaxed">{BUSINESS_INFO.address.full}</span>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <Clock className="h-4 w-4 text-green shrink-0" />
-                <span className="text-xs">{BUSINESS_INFO.hours}</span>
-              </div>
-
-              <div className="flex items-center gap-2.5 pt-2">
-                <Phone className="h-4 w-4 text-green shrink-0" />
-                <a
-                  href={`tel:${BUSINESS_INFO.phone}`}
-                  className="text-xs hover:text-green transition-colors"
-                >
-                  {BUSINESS_INFO.phoneFormatted}
-                </a>
+          {/* Col 4: Contact & Operations */}
+          <div>
+            <div className="text-eyebrow mb-4">Contact & Visit</div>
+            <ul className="space-y-3.5">
+              <li className="flex items-start gap-2.5">
+                <MapPin className="h-4 w-4 text-text-dim mt-0.5 shrink-0" aria-hidden="true" />
+                <span className="text-xs text-text-muted leading-relaxed">
+                  {BUSINESS_INFO.address.full}
+                </span>
+              </li>
+              <li>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(BUSINESS_INFO.phone, 'Phone number')}
-                  className="text-text-dim hover:text-text transition-colors p-1"
-                  aria-label="Copy phone number"
+                  onClick={() => copyToClipboard(BUSINESS_INFO.phoneFormatted, 'Phone number')}
+                  className="flex items-center gap-2.5 text-xs text-text-muted hover:text-text transition-colors group text-left"
+                  title="Click to copy phone number"
                 >
-                  <Copy className="h-3 w-3" />
+                  <Phone className="h-4 w-4 text-text-dim shrink-0 group-hover:text-green" aria-hidden="true" />
+                  <a
+                    href={`tel:${BUSINESS_INFO.phone}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:underline"
+                  >
+                    {BUSINESS_INFO.phoneFormatted}
+                  </a>
+                  <Copy className="h-3 w-3 text-text-dim opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
                 </button>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <MessageCircle className="h-4 w-4 text-green shrink-0" />
-                <a
-                  href="/whatsapp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-green hover:underline"
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(BUSINESS_INFO.email, 'Email address')}
+                  className="flex items-center gap-2.5 text-xs text-text-muted hover:text-text transition-colors group text-left"
+                  title="Click to copy email address"
                 >
-                  WhatsApp Us
-                </a>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 text-green shrink-0" />
+                  <Mail className="h-4 w-4 text-text-dim shrink-0 group-hover:text-green" aria-hidden="true" />
+                  <a
+                    href={`mailto:${BUSINESS_INFO.email}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:underline"
+                  >
+                    {BUSINESS_INFO.email}
+                  </a>
+                  <Copy className="h-3 w-3 text-text-dim opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                </button>
+              </li>
+              <li>
                 <a
-                  href={`mailto:${BUSINESS_INFO.email}`}
-                  className="text-xs hover:text-green transition-colors"
+                  href={BUSINESS_INFO.whatsappUrl}
+                  className="flex items-center gap-2.5 text-xs text-text-muted hover:text-green transition-colors"
                 >
-                  {BUSINESS_INFO.email}
+                  <MessageCircle className="h-4 w-4 text-text-dim shrink-0" aria-hidden="true" />
+                  <span>Chat on WhatsApp</span>
                 </a>
-              </div>
-            </div>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Clock className="h-4 w-4 text-text-dim mt-0.5 shrink-0" aria-hidden="true" />
+                <span className="text-xs text-text-muted leading-relaxed">
+                  {BUSINESS_INFO.hours}
+                </span>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-dim">
-          <p>© {currentYear} {BUSINESS_INFO.name}. All rights reserved.</p>
+        {/* Legal & Copyright Bar */}
+        <div className="mt-14 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-6">
             {LEGAL_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="hover:text-text transition-colors"
+                className="text-xs text-text-dim hover:text-text transition-colors"
               >
                 {link.label}
               </Link>
             ))}
           </div>
+          <p className="text-xs text-text-dim text-center sm:text-right">
+            © {currentYear} Growth Bridge Accelerator. All rights reserved.
+          </p>
         </div>
+      </div>
+
+      {/* Ghost Wordmark (Section 4.14: outlined text, rgba(255,255,255,0.06) stroke, clipped by page bottom, hidden below 768px) */}
+      <div
+        className="hidden md:block select-none pointer-events-none overflow-hidden h-[90px] w-full text-center"
+        aria-hidden="true"
+      >
+        <span
+          className="font-display font-extrabold text-[120px] lg:text-[150px] leading-none tracking-tighter whitespace-nowrap inline-block -translate-y-6"
+          style={{
+            WebkitTextStroke: '1px rgba(255,255,255,0.06)',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          GROWTH BRIDGE
+        </span>
       </div>
 
       <Toast
