@@ -49,36 +49,29 @@ interface BlogPostRecord {
   published_at: string | null;
 }
 
-interface BlogPageProps {
-  searchParams: Promise<{ page?: string }>;
-}
-
-export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
-  const { page } = await searchParams;
-  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
-  const pageSize = 9;
-  const offset = (currentPage - 1) * pageSize;
-
+export default async function BlogIndexPage() {
   let posts: BlogPostRecord[] = [];
-  let totalCount = 0;
 
   try {
     const supabase = createPublicSupabaseClient();
-    const { data, count } = await supabase
+    const query = supabase
       .from('blog_posts')
-      .select('id, title, slug, excerpt, cover_image_url, tags, published_at', { count: 'exact' })
+      .select('id, title, slug, excerpt, cover_image_url, tags, published_at')
       .eq('is_published', true)
       .order('published_at', { ascending: false })
-      .range(offset, offset + pageSize - 1);
+      .limit(24);
 
-    if (data) posts = data;
-    if (count) totalCount = count;
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000));
+    const result: any = await Promise.race([query, timeout]);
+
+    if (result && result.data) {
+      posts = result.data;
+    }
   } catch {
     // Database empty or offline — shows empty state
   }
 
   const hasPosts = posts.length > 0;
-  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <>
@@ -168,24 +161,7 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
                 ))}
               </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-3 pt-12">
-                  {currentPage > 1 && (
-                    <Button href={`/blog?page=${currentPage - 1}`} variant="secondary" size="sm">
-                      Previous
-                    </Button>
-                  )}
-                  <span className="text-xs font-mono text-text-dim">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  {currentPage < totalPages && (
-                    <Button href={`/blog?page=${currentPage + 1}`} variant="secondary" size="sm">
-                      Next
-                    </Button>
-                  )}
-                </div>
-              )}
+              {/* End of posts */}
             </>
           )}
         </Container>

@@ -17,52 +17,90 @@ interface BlogPostPageProps {
 
 export const revalidate = 600;
 
+export async function generateStaticParams() {
+  try {
+    const supabase = createPublicSupabaseClient();
+    const query = supabase
+      .from('blog_posts')
+      .select('slug')
+      .eq('is_published', true);
+
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000));
+    const result: any = await Promise.race([query, timeout]);
+
+    if (result && result.data) {
+      return result.data.map((p: { slug: string }) => ({ slug: p.slug }));
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = createPublicSupabaseClient();
+  try {
+    const supabase = createPublicSupabaseClient();
+    const query = supabase
+      .from('blog_posts')
+      .select('title, excerpt, seo_title, seo_description')
+      .eq('slug', slug)
+      .eq('is_published', true)
+      .maybeSingle();
 
-  const { data: post } = await supabase
-    .from('blog_posts')
-    .select('title, excerpt, seo_title, seo_description')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .maybeSingle();
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000));
+    const result: any = await Promise.race([query, timeout]);
+    const post = result?.data;
 
-  if (!post) {
+    if (!post) {
+      return { title: 'Article Not Found' };
+    }
+
+    return {
+      title: post.seo_title || `${post.title} | Growth Bridge Accelerator`,
+      description: post.seo_description || post.excerpt || '',
+    };
+  } catch {
     return { title: 'Article Not Found' };
   }
-
-  return {
-    title: post.seo_title || `${post.title} | Growth Bridge Accelerator`,
-    description: post.seo_description || post.excerpt || '',
-  };
 }
 
 export default async function BlogPostDetailPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const supabase = createPublicSupabaseClient();
+  let post: any = null;
 
-  // 1. Fetch published post
-  const { data: post } = await supabase
-    .from('blog_posts')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .maybeSingle();
-
-  // 2. Check slug history per Section 7.6
-  if (!post) {
-    const { data: history } = await supabase
-      .from('slug_history')
-      .select('new_slug')
-      .eq('content_type', 'blog')
-      .eq('old_slug', slug)
+  try {
+    const supabase = createPublicSupabaseClient();
+    const query = supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_published', true)
       .maybeSingle();
 
-    if (history?.new_slug) {
-      permanentRedirect(`/blog/${history.new_slug}`);
-    }
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000));
+    const result: any = await Promise.race([query, timeout]);
+    post = result?.data;
 
+    // Check slug history if not found
+    if (!post) {
+      const historyQuery = supabase
+        .from('slug_history')
+        .select('new_slug')
+        .eq('content_type', 'blog')
+        .eq('old_slug', slug)
+        .maybeSingle();
+
+      const historyResult: any = await Promise.race([historyQuery, timeout]);
+      const history = historyResult?.data;
+
+      if (history?.new_slug) {
+        permanentRedirect(`/blog/${history.new_slug}`);
+      }
+
+      notFound();
+    }
+  } catch {
     notFound();
   }
 
