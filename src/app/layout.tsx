@@ -9,6 +9,7 @@ import { Analytics } from '@/components/layout/analytics';
 import { SmoothScroll } from '@/components/layout/smooth-scroll';
 import { UTMTracker } from '@/components/layout/utm-tracker';
 import { BUSINESS_INFO } from '@/lib/utils';
+import { createPublicSupabaseClient } from '@/lib/supabase/server';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -89,11 +90,26 @@ const jsonLd = {
   sameAs: ['https://wa.me/918883838363'],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let hasCaseStudies = false;
+  let hasPricing = false;
+
+  try {
+    const supabase = createPublicSupabaseClient();
+    const [csRes, pkgRes] = await Promise.all([
+      supabase.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_published', true),
+      supabase.from('packages').select('id', { count: 'exact', head: true }).eq('is_published', true),
+    ]);
+    hasCaseStudies = Boolean(csRes.count && csRes.count > 0);
+    hasPricing = Boolean(pkgRes.count && pkgRes.count > 0);
+  } catch {
+    // Unconfigured or offline fallback
+  }
+
   return (
     <html
       lang="en"
@@ -109,11 +125,11 @@ export default function RootLayout({
         <a href="#main-content" className="skip-to-content">
           Skip to content
         </a>
-        <Header />
+        <Header hasCaseStudies={hasCaseStudies} hasPricing={hasPricing} />
         <main id="main-content" className="flex-1 pt-[72px]">
           {children}
         </main>
-        <Footer />
+        <Footer hasCaseStudies={hasCaseStudies} hasPricing={hasPricing} />
         <MobileBar />
         <CookieConsent />
         <Analytics />

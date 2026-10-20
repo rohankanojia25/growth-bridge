@@ -61,8 +61,11 @@ export function trackAnalyticsEvent(
     | 'call_click'
     | 'lead_submit'
     | 'booking_submit'
-    | 'package_select',
-  params?: Record<string, string | number | boolean>
+    | 'package_select'
+    | 'path_click'
+    | 'get_started_submit'
+    | (string & {}),
+  params?: Record<string, string | number | boolean | undefined>
 ) {
   if (typeof window === 'undefined') return;
   const consent = localStorage.getItem('gba_cookie_consent');

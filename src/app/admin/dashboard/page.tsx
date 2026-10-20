@@ -17,16 +17,10 @@ export default async function AdminDashboardPage() {
     .select('id', { count: 'exact', head: true })
     .gte('created_at', sevenDaysAgo);
 
-  // 2. Bookings this week
-  const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
-  startOfWeek.setHours(0, 0, 0, 0);
-
-  const { count: bookingsThisWeek } = await supabase
-    .from('bookings')
-    .select('id', { count: 'exact', head: true })
-    .gte('slot_start', startOfWeek.toISOString())
-    .neq('status', 'cancelled');
+  // 2. Total all-time leads
+  const { count: totalLeadsCount } = await supabase
+    .from('leads')
+    .select('id', { count: 'exact', head: true });
 
   // 3. Leads by status counts
   const { data: statusRows } = await supabase.from('leads').select('status');
@@ -86,13 +80,13 @@ export default async function AdminDashboardPage() {
 
         <div className="rounded-2xl glass border border-border p-6 space-y-2">
           <div className="flex items-center justify-between text-text-dim text-xs font-mono uppercase tracking-wider">
-            <span>Bookings This Week</span>
-            <Calendar className="w-4 h-4 text-cyan" />
+            <span>Total Inquiries</span>
+            <TrendingUp className="w-4 h-4 text-cyan" />
           </div>
           <div className="font-display font-bold text-3xl text-text">
-            {bookingsThisWeek ?? 0}
+            {totalLeadsCount ?? 0}
           </div>
-          <p className="text-[11px] text-text-muted">Confirmed consultation slots</p>
+          <p className="text-[11px] text-text-muted">Lifetime get-started & contact leads</p>
         </div>
 
         <div className="rounded-2xl glass border border-border p-6 space-y-2">

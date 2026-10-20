@@ -14,6 +14,10 @@ import {
   Plus,
   Clock,
   Filter,
+  ShieldCheck,
+  Lightbulb,
+  Briefcase,
+  ExternalLink,
 } from 'lucide-react';
 
 interface LeadRecord {
@@ -36,6 +40,15 @@ interface LeadRecord {
   referrer: string | null;
   landing_path: string | null;
   created_at: string;
+  // v3 columns
+  lead_type?: 'idea' | 'business' | string | null;
+  idea_summary?: string | null;
+  idea_stage?: string | null;
+  starting_budget?: string | null;
+  wants_nda?: boolean | null;
+  challenge?: string | null;
+  city?: string | null;
+  link_url?: string | null;
 }
 
 export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
@@ -46,7 +59,7 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
   const [leads, setLeads] = useState<LeadRecord[]>(initialLeads);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [serviceFilter, setServiceFilter] = useState('all');
+  const [leadTypeFilter, setLeadTypeFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
 
   // Detail Drawer state
@@ -65,15 +78,16 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
         l.name.toLowerCase().includes(search.toLowerCase()) ||
         l.phone.includes(search) ||
         (l.email && l.email.toLowerCase().includes(search.toLowerCase())) ||
-        (l.business_name && l.business_name.toLowerCase().includes(search.toLowerCase()));
+        (l.business_name && l.business_name.toLowerCase().includes(search.toLowerCase())) ||
+        (l.idea_summary && l.idea_summary.toLowerCase().includes(search.toLowerCase()));
 
       const matchesStatus = statusFilter === 'all' || l.status === statusFilter;
-      const matchesService = serviceFilter === 'all' || l.service === serviceFilter;
+      const matchesType = leadTypeFilter === 'all' || l.lead_type === leadTypeFilter;
       const matchesSource = sourceFilter === 'all' || l.source === sourceFilter;
 
-      return matchesSearch && matchesStatus && matchesService && matchesSource;
+      return matchesSearch && matchesStatus && matchesType && matchesSource;
     });
-  }, [leads, search, statusFilter, serviceFilter, sourceFilter]);
+  }, [leads, search, statusFilter, leadTypeFilter, sourceFilter]);
 
   // Update Status
   const handleStatusChange = async (newStatus: string) => {
@@ -127,16 +141,24 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
     }
   };
 
-  // Export CSV of filtered list per Section 9.5
+  // Export CSV of filtered list with v3 columns
   const handleExportCSV = () => {
     const headers = [
       'ID',
+      'Lead Type',
       'Name',
       'Phone',
       'Email',
-      'Business',
-      'Service',
-      'Budget',
+      'Business Name',
+      'City',
+      'Idea Summary',
+      'Idea Stage',
+      'Starting Budget',
+      'Wants NDA',
+      'What They Sell / Message',
+      'Challenge',
+      'Link URL',
+      'Budget Range',
       'Status',
       'Source',
       'Created At',
@@ -147,11 +169,19 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
 
     const rows = filteredLeads.map((l) => [
       l.id,
+      l.lead_type || 'idea',
       `"${l.name.replace(/"/g, '""')}"`,
       `"${l.phone}"`,
       `"${l.email || ''}"`,
       `"${(l.business_name || '').replace(/"/g, '""')}"`,
-      l.service,
+      `"${(l.city || '').replace(/"/g, '""')}"`,
+      `"${(l.idea_summary || '').replace(/"/g, '""')}"`,
+      `"${l.idea_stage || ''}"`,
+      `"${l.starting_budget || ''}"`,
+      l.wants_nda ? 'YES' : 'NO',
+      `"${(l.message || '').replace(/"/g, '""')}"`,
+      `"${(l.challenge || '').replace(/"/g, '""')}"`,
+      `"${l.link_url || ''}"`,
       l.budget_range || '',
       l.status,
       l.source,
@@ -203,12 +233,23 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
           <Search className="w-4 h-4 text-text-dim absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search name, phone, email..."
+            placeholder="Search name, phone, email, idea..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-10 w-full pl-9 pr-4 rounded-xl bg-bg border border-border text-xs text-text placeholder:text-text-dim focus:outline-none focus:border-green"
           />
         </div>
+
+        {/* Lead Type Filter */}
+        <select
+          value={leadTypeFilter}
+          onChange={(e) => setLeadTypeFilter(e.target.value)}
+          className="h-10 px-3 rounded-xl bg-bg border border-border text-xs text-text focus:outline-none focus:border-green"
+        >
+          <option value="all">All Paths (Idea & Business)</option>
+          <option value="idea">Path: I have an idea</option>
+          <option value="business">Path: I have a business</option>
+        </select>
 
         {/* Status Filter */}
         <select
@@ -216,27 +257,13 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="h-10 px-3 rounded-xl bg-bg border border-border text-xs text-text focus:outline-none focus:border-green"
         >
-          <option value="all">All Statuses</option>
-          <option value="new">New</option>
+          <option value="all">All Pipeline Statuses</option>
+          <option value="new">New (Uncontacted)</option>
           <option value="contacted">Contacted</option>
           <option value="qualified">Qualified</option>
           <option value="proposal_sent">Proposal Sent</option>
-          <option value="won">Won</option>
+          <option value="won">Won (Active Client)</option>
           <option value="lost">Lost</option>
-        </select>
-
-        {/* Service Filter */}
-        <select
-          value={serviceFilter}
-          onChange={(e) => setServiceFilter(e.target.value)}
-          className="h-10 px-3 rounded-xl bg-bg border border-border text-xs text-text focus:outline-none focus:border-green"
-        >
-          <option value="all">All Services</option>
-          <option value="consulting">Business Consulting</option>
-          <option value="website">Website Generation</option>
-          <option value="crm">CRM for Businesses</option>
-          <option value="marketing">Full-Stack Marketing</option>
-          <option value="unsure">Not Sure</option>
         </select>
 
         {/* Source Filter */}
@@ -246,9 +273,8 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
           className="h-10 px-3 rounded-xl bg-bg border border-border text-xs text-text focus:outline-none focus:border-green"
         >
           <option value="all">All Sources</option>
+          <option value="get_started">Get Started Page</option>
           <option value="contact_form">Contact Form</option>
-          <option value="consultation_booking">Consultation Booking</option>
-          <option value="home_quick_form">Home Quick Form</option>
         </select>
       </div>
 
@@ -258,11 +284,11 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
           <table className="w-full text-left text-xs">
             <thead className="border-b border-border text-text-dim uppercase font-mono tracking-wider bg-surface/50">
               <tr>
+                <th className="py-3 px-4">Path / Type</th>
                 <th className="py-3 px-4">Name & Business</th>
                 <th className="py-3 px-4">Phone</th>
-                <th className="py-3 px-4">Service</th>
+                <th className="py-3 px-4">Summary / Offer</th>
                 <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Source</th>
                 <th className="py-3 px-4">Date</th>
                 <th className="py-3 px-4 text-right">Action</th>
               </tr>
@@ -275,68 +301,84 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
                   </td>
                 </tr>
               ) : (
-                filteredLeads.map((lead) => (
-                  <tr
-                    key={lead.id}
-                    onClick={() => router.push(`/admin/leads?lead=${lead.id}`)}
-                    className="hover:bg-white/[0.03] transition-colors cursor-pointer"
-                  >
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-text">{lead.name}</div>
-                      {lead.business_name && (
-                        <div className="text-[11px] text-text-dim">{lead.business_name}</div>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-text">
-                      +91 {lead.phone}
-                    </td>
-                    <td className="py-3 px-4 capitalize text-text">
-                      {lead.service}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface border border-border text-green">
-                        {lead.status.replace('_', ' ')}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-text-dim font-mono text-[11px]">
-                      {lead.source.replace('_', ' ')}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-text-dim">
-                      {formatDate(lead.created_at)}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <span className="text-xs text-green font-medium">Drawer →</span>
-                    </td>
-                  </tr>
-                ))
+                filteredLeads.map((lead) => {
+                  const isIdea = lead.lead_type === 'idea';
+                  return (
+                    <tr
+                      key={lead.id}
+                      onClick={() => router.push(`/admin/leads?lead=${lead.id}`)}
+                      className="hover:bg-white/[0.03] transition-colors cursor-pointer"
+                    >
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase tracking-wider ${
+                            isIdea
+                              ? 'bg-green/10 text-green border border-green/30'
+                              : 'bg-cyan/10 text-cyan border border-cyan/30'
+                          }`}
+                        >
+                          {isIdea ? <Lightbulb className="w-3 h-3" /> : <Briefcase className="w-3 h-3" />}
+                          <span>{isIdea ? 'Idea' : 'Business'}</span>
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-text">{lead.name}</div>
+                        {lead.business_name && (
+                          <div className="text-[11px] text-text-dim">{lead.business_name}</div>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-text">
+                        +91 {lead.phone}
+                      </td>
+                      <td className="py-3 px-4 text-text-muted max-w-xs truncate">
+                        {isIdea ? (lead.idea_summary || 'No summary') : (lead.message || 'No description')}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-surface border border-border text-green">
+                          {lead.status.replace('_', ' ')}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-text-dim">
+                        {formatDate(lead.created_at)}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span className="text-xs text-green font-medium">Drawer →</span>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Section 9.5: Detail Drawer opened by ?lead=<id> */}
+      {/* Detail Drawer */}
       {selectedLead && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-bg/75 backdrop-blur-sm"
             onClick={closeDrawer}
             aria-hidden="true"
           />
 
-          {/* Drawer Pane */}
           <div className="relative w-full max-w-lg bg-surface border-l border-border h-full overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl flex flex-col justify-between">
             <div className="space-y-6">
               {/* Header */}
               <div className="flex items-start justify-between border-b border-border pb-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-green">
-                    Lead Details
+                  <span
+                    className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider mb-2 font-semibold ${
+                      selectedLead.lead_type === 'idea'
+                        ? 'bg-green/10 text-green border border-green/30'
+                        : 'bg-cyan/10 text-cyan border border-cyan/30'
+                    }`}
+                  >
+                    {selectedLead.lead_type === 'idea' ? 'Path: I Have An Idea' : 'Path: I Have A Business'}
                   </span>
-                  <h2 className="text-h3 text-xl text-text mt-0.5">{selectedLead.name}</h2>
+                  <h2 className="text-h3 text-xl text-text">{selectedLead.name}</h2>
                   {selectedLead.business_name && (
-                    <p className="text-xs text-text-dim">{selectedLead.business_name}</p>
+                    <p className="text-xs text-text-dim">{selectedLead.business_name} ({selectedLead.city || 'Delhi'})</p>
                   )}
                 </div>
 
@@ -369,7 +411,7 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
                 </a>
               </div>
 
-              {/* Status Updater */}
+              {/* Status Pipeline Updater */}
               <div className="p-4 rounded-2xl bg-bg border border-border space-y-2">
                 <label className="text-xs font-mono uppercase tracking-wider text-text-dim block">
                   Update Lead Pipeline Status
@@ -389,48 +431,98 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
                 </select>
               </div>
 
-              {/* Inquiry Details */}
-              <div className="space-y-3 text-xs">
+              {/* PATH SPECIFIC FIELDS */}
+              {selectedLead.lead_type === 'idea' ? (
+                <div className="p-4 rounded-2xl bg-bg border border-border space-y-3 text-xs">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-green">
+                    Idea Blueprint Details
+                  </div>
+                  {selectedLead.idea_summary && (
+                    <div>
+                      <span className="text-text-dim block mb-1">Idea Description:</span>
+                      <p className="text-text leading-relaxed p-3 rounded-xl bg-surface border border-border">
+                        {selectedLead.idea_summary}
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-dim">Current Stage:</span>
+                    <span className="text-text font-medium">{selectedLead.idea_stage || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-dim">Starting Budget:</span>
+                    <span className="text-text font-medium">{selectedLead.starting_budget || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-dim">Requested NDA:</span>
+                    <span className={`font-medium flex items-center gap-1 ${selectedLead.wants_nda ? 'text-green' : 'text-text-muted'}`}>
+                      {selectedLead.wants_nda ? <ShieldCheck className="w-3.5 h-3.5 text-green" /> : null}
+                      {selectedLead.wants_nda ? 'YES — Needs NDA' : 'No'}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-bg border border-border space-y-3 text-xs">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-cyan">
+                    Business Profile Details
+                  </div>
+                  {selectedLead.message && (
+                    <div>
+                      <span className="text-text-dim block mb-1">What They Sell:</span>
+                      <p className="text-text leading-relaxed p-3 rounded-xl bg-surface border border-border">
+                        {selectedLead.message}
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-dim">City:</span>
+                    <span className="text-text font-medium">{selectedLead.city || 'Delhi'}</span>
+                  </div>
+                  {selectedLead.link_url && (
+                    <div className="flex justify-between py-1.5 border-b border-border">
+                      <span className="text-text-dim">Website / Social:</span>
+                      <a
+                        href={selectedLead.link_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-green hover:underline flex items-center gap-1"
+                      >
+                        <span className="truncate max-w-[200px]">{selectedLead.link_url}</span>
+                        <ExternalLink className="w-3 h-3 shrink-0" />
+                      </a>
+                    </div>
+                  )}
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-dim">Biggest Challenge:</span>
+                    <span className="text-text font-medium">{selectedLead.challenge || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-dim">Monthly Marketing Budget:</span>
+                    <span className="text-text font-medium">{selectedLead.budget_range || 'Not specified'}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Contact Info */}
+              <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1.5 border-b border-border">
                   <span className="text-text-dim">Email:</span>
                   <span className="text-text font-medium">{selectedLead.email || 'None'}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-text-dim">Service:</span>
-                  <span className="text-text font-medium capitalize">{selectedLead.service}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-text-dim">Monthly Budget:</span>
-                  <span className="text-text font-medium">{selectedLead.budget_range || 'Not specified'}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-border">
                   <span className="text-text-dim">Form Source:</span>
-                  <span className="text-text font-medium">{selectedLead.source}</span>
-                </div>
-                {selectedLead.message && (
-                  <div className="pt-2">
-                    <span className="text-text-dim block mb-1">Message:</span>
-                    <div className="p-3 rounded-xl bg-bg border border-border text-text-muted leading-relaxed">
-                      {selectedLead.message}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* UTM & Attribution Details */}
-              <div className="p-4 rounded-2xl bg-bg border border-border space-y-2 text-xs">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-green">
-                  Acquisition Attribution
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-text-muted">
-                  <div>Source: <span className="text-text">{selectedLead.utm_source || 'direct'}</span></div>
-                  <div>Medium: <span className="text-text">{selectedLead.utm_medium || 'none'}</span></div>
-                  <div>Campaign: <span className="text-text">{selectedLead.utm_campaign || 'none'}</span></div>
-                  <div>Landing: <span className="text-text font-mono text-[11px]">{selectedLead.landing_path || '/'}</span></div>
+                  <span className="text-text font-mono">{selectedLead.source}</span>
                 </div>
               </div>
 
-              {/* Append-Only Timestamped Notes */}
+              {/* Attribution */}
+              <div className="p-3.5 rounded-xl bg-bg border border-border text-xs space-y-1 text-text-dim">
+                <div className="text-[10px] font-mono uppercase text-green">Attribution</div>
+                <div>Source: <span className="text-text">{selectedLead.utm_source || 'direct'}</span> · Medium: <span className="text-text">{selectedLead.utm_medium || 'none'}</span></div>
+                <div>Landing: <span className="text-text font-mono text-[11px]">{selectedLead.landing_path || '/'}</span></div>
+              </div>
+
+              {/* Notes */}
               <div className="space-y-3">
                 <div className="text-xs font-mono uppercase tracking-wider text-text flex items-center justify-between">
                   <span>Timestamped Notes</span>
@@ -453,11 +545,10 @@ export function LeadsManager({ initialLeads }: { initialLeads: LeadRecord[] }) {
                   )}
                 </div>
 
-                {/* Add Note Form */}
                 <form onSubmit={handleAddNote} className="space-y-2 pt-2">
                   <textarea
                     rows={2}
-                    placeholder="Add an internal note (e.g. called back Rajesh, proposal scheduled)..."
+                    placeholder="Add an internal note..."
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
                     className="w-full p-3 rounded-xl bg-bg border border-border text-xs text-text placeholder:text-text-dim focus:outline-none focus:border-green"

@@ -3,27 +3,24 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn, SERVICES } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Logo } from '@/components/ui/logo';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Compass, Globe, Megaphone, Users } from 'lucide-react';
 
-interface NavItem {
-  label: string;
-  href: string;
-  hasDropdown?: boolean;
+interface HeaderProps {
+  hasCaseStudies?: boolean;
+  hasPricing?: boolean;
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { label: 'Services', href: '/services', hasDropdown: true },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Case Studies', href: '/case-studies' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+const SERVICE_SECTIONS = [
+  { label: '01. Plan', href: '/services#plan', desc: 'Strategy, idea validation, and business planning', icon: Compass },
+  { label: '02. Build', href: '/services#build', desc: 'Websites, landing pages, and branding presence', icon: Globe },
+  { label: '03. Market', href: '/services#market', desc: 'SEO, social media, paid ads, and lead generation', icon: Megaphone },
+  { label: '04. Retain (Grow)', href: '/services#grow', desc: 'CRM setup, follow-ups, and repeat customer retention', icon: Users },
 ];
 
-export function Header() {
+export function Header({ hasCaseStudies = false, hasPricing = false }: HeaderProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -77,6 +74,15 @@ export function Header() {
     }, 150);
   };
 
+  // Build nav links based on published state
+  const navItems = [
+    { label: 'Services', href: '/services', hasDropdown: true },
+    ...(hasPricing ? [{ label: 'Pricing', href: '/pricing', hasDropdown: false }] : []),
+    ...(hasCaseStudies ? [{ label: 'Case Studies', href: '/case-studies', hasDropdown: false }] : []),
+    { label: 'About', href: '/about', hasDropdown: false },
+    { label: 'Contact', href: '/contact', hasDropdown: false },
+  ];
+
   return (
     <header
       className={cn(
@@ -92,7 +98,7 @@ export function Header() {
 
         {/* Center: Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const active = isActive(item.href);
 
             if (item.hasDropdown) {
@@ -103,66 +109,69 @@ export function Header() {
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      'relative flex items-center gap-1.5 px-3.5 py-2 text-sm font-body font-medium transition-colors rounded-lg group',
-                      active ? 'text-text' : 'text-text-muted hover:text-text'
-                    )}
-                    aria-expanded={isDropdownOpen}
-                  >
-                    <span>{item.label}</span>
-                    <ChevronDown
+                  <div className="flex items-center">
+                    <Link
+                      href={item.href}
                       className={cn(
-                        'h-3.5 w-3.5 transition-transform duration-200',
-                        isDropdownOpen && 'rotate-180 text-green'
+                        'relative px-3.5 py-2 text-sm font-body font-medium transition-colors rounded-lg flex items-center gap-1.5',
+                        active ? 'text-text' : 'text-text-muted hover:text-text'
                       )}
-                      aria-hidden="true"
-                    />
-                    {active && (
-                      <span className="absolute bottom-0 left-3.5 right-3.5 h-[2px] bg-green rounded-full" />
-                    )}
-                  </Link>
+                      aria-expanded={isDropdownOpen}
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown
+                        className={cn(
+                          'h-3.5 w-3.5 transition-transform duration-200',
+                          isDropdownOpen && 'rotate-180 text-green'
+                        )}
+                        aria-hidden="true"
+                      />
+                      {active && (
+                        <span className="absolute bottom-0 left-3.5 right-3.5 h-[2px] bg-green rounded-full" />
+                      )}
+                    </Link>
+                  </div>
 
                   {/* Dropdown Menu */}
                   <div
                     className={cn(
-                      'absolute top-full left-0 pt-2 transition-all duration-200',
+                      'absolute top-full left-0 pt-2 transition-all duration-200 w-80',
                       isDropdownOpen
                         ? 'opacity-100 visible translate-y-0 pointer-events-auto'
                         : 'opacity-0 invisible -translate-y-2 pointer-events-none'
                     )}
                   >
-                    <div className="w-[360px] rounded-2xl glass border border-border-strong p-3 shadow-2xl backdrop-blur-2xl">
-                      <div className="px-3 py-2 border-b border-border mb-2">
-                        <Link
-                          href="/services"
-                          className="text-xs font-mono uppercase tracking-wider text-green hover:underline flex items-center justify-between"
-                        >
-                          <span>Explore All 4 Services</span>
-                          <span>→</span>
-                        </Link>
+                    <div className="rounded-2xl glass border border-border p-3 shadow-2xl space-y-1">
+                      <div className="px-3 py-1.5 text-eyebrow text-text-dim">
+                        Our 4 Growth Stages
                       </div>
-                      <div className="space-y-1">
-                        {SERVICES.map((service) => (
+
+                      {SERVICE_SECTIONS.map((stage) => {
+                        const Icon = stage.icon;
+                        return (
                           <Link
-                            key={service.key}
-                            href={`/services/${service.slug}`}
-                            className={cn(
-                              'block rounded-xl px-3 py-2.5 transition-colors',
-                              pathname === `/services/${service.slug}`
-                                ? 'bg-surface-hover text-text'
-                                : 'hover:bg-white/[0.04] text-text-muted hover:text-text'
-                            )}
+                            key={stage.href}
+                            href={stage.href}
+                            className="block rounded-xl px-3 py-2.5 transition-colors hover:bg-white/[0.04] text-text-muted hover:text-text group"
                           >
-                            <div className="font-display font-medium text-sm text-text">
-                              {service.title}
+                            <div className="font-display font-medium text-sm text-text flex items-center gap-2 group-hover:text-green">
+                              <Icon className="w-4 h-4 text-green" />
+                              <span>{stage.label}</span>
                             </div>
                             <div className="text-xs text-text-dim mt-0.5 line-clamp-1">
-                              {service.shortDescription}
+                              {stage.desc}
                             </div>
                           </Link>
-                        ))}
+                        );
+                      })}
+
+                      <div className="pt-2 border-t border-border mt-2">
+                        <Link
+                          href="/services"
+                          className="block text-center py-1 text-xs font-semibold text-green hover:underline"
+                        >
+                          View Full Services Page →
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -188,10 +197,10 @@ export function Header() {
           })}
         </nav>
 
-        {/* Right: CTA Button */}
+        {/* Right: CTA Button ("Get started") */}
         <div className="hidden lg:flex items-center">
-          <Button href="/book-consultation" size="sm" showArrow>
-            Book Free Consultation
+          <Button href="/get-started" size="sm" showArrow>
+            Get started
           </Button>
         </div>
 
@@ -235,52 +244,29 @@ export function Header() {
           <div className="space-y-4">
             <div className="text-eyebrow text-text-dim px-2">Navigation</div>
             <div className="space-y-1">
-              {NAV_ITEMS.map((item) => {
+              {navItems.map((item) => {
                 const active = isActive(item.href);
                 return (
-                  <div key={item.href} className="space-y-1">
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        'flex items-center justify-between px-3 py-2.5 rounded-xl font-display text-lg font-medium transition-colors',
-                        active ? 'text-green bg-green/10' : 'text-text hover:bg-white/[0.04]'
-                      )}
-                    >
-                      <span>{item.label}</span>
-                      {active && <span className="w-1.5 h-1.5 rounded-full bg-green" />}
-                    </Link>
-
-                    {item.hasDropdown && (
-                      <div className="pl-4 space-y-1 border-l border-border ml-3 my-1">
-                        {SERVICES.map((service) => (
-                          <Link
-                            key={service.key}
-                            href={`/services/${service.slug}`}
-                            className={cn(
-                              'block px-3 py-1.5 text-sm transition-colors rounded-lg',
-                              pathname === `/services/${service.slug}`
-                                ? 'text-green font-medium'
-                                : 'text-text-muted hover:text-text'
-                            )}
-                          >
-                            {service.title}
-                          </Link>
-                        ))}
-                      </div>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'flex items-center justify-between px-3 py-2.5 rounded-xl font-display text-lg font-medium transition-colors',
+                      active ? 'text-green bg-green/10' : 'text-text hover:bg-white/[0.04]'
                     )}
-                  </div>
+                  >
+                    <span>{item.label}</span>
+                    {active && <span className="w-1.5 h-1.5 rounded-full bg-green" />}
+                  </Link>
                 );
               })}
             </div>
           </div>
 
-          <div className="pt-6 border-t border-border mt-6">
-            <Button href="/book-consultation" className="w-full" showArrow>
-              Book Free Consultation
+          <div className="pt-6 border-t border-border">
+            <Button href="/get-started" className="w-full" showArrow>
+              Get started
             </Button>
-            <p className="text-center text-xs text-text-dim mt-3">
-              Delhi NCR · Across India
-            </p>
           </div>
         </nav>
       </div>

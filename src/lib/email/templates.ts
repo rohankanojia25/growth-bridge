@@ -1,4 +1,5 @@
 import { BUSINESS_INFO } from '@/lib/utils';
+import { FIRST_REPLY_TIME } from '@/lib/config';
 
 const brandStyles = {
   bg: '#05060A',
@@ -54,202 +55,113 @@ export function adminLeadNotification(lead: {
   phone: string;
   email?: string;
   business_name?: string;
-  service: string;
+  service?: string;
   budget_range?: string;
   message?: string;
   source: string;
+  lead_type?: 'idea' | 'business';
+  idea_summary?: string;
+  idea_stage?: string;
+  starting_budget?: string;
+  wants_nda?: boolean;
+  challenge?: string;
+  city?: string;
+  link_url?: string;
 }): { subject: string; html: string } {
-  const serviceLabels: Record<string, string> = {
-    consulting: 'Business Consulting',
-    website: 'Website Generation',
-    crm: 'CRM for Businesses',
-    marketing: 'Full-Stack Marketing',
-    unsure: 'Not sure yet',
-  };
-
-  const budgetLabels: Record<string, string> = {
-    below_10k: 'Below ₹10,000',
-    '10k_50k': '₹10,000 to ₹50,000',
-    '50k_2l': '₹50,000 to ₹2,00,000',
-    above_2l: 'Above ₹2,00,000',
-    not_decided: 'Not decided',
-  };
-
-  const sourceLabels: Record<string, string> = {
-    contact_form: 'Contact Form',
-    consultation_booking: 'Consultation Booking',
-    home_quick_form: 'Home Quick Form',
-  };
+  const isIdea = lead.lead_type === 'idea';
+  const tag = isIdea ? 'IDEA' : 'BUSINESS';
+  const identifier = isIdea ? lead.name : (lead.business_name || lead.name);
 
   const content = `
-<h1 style="margin:0 0 24px;font-size:24px;font-weight:600;color:${brandStyles.text};">New Lead Received</h1>
+<h1 style="margin:0 0 24px;font-size:22px;font-weight:600;color:${brandStyles.text};">New [${tag}] Inquiry Received</h1>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Name</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${lead.name}</span>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Path / Type</span><br>
+  <span style="font-size:15px;color:${brandStyles.text};font-weight:600;">${isIdea ? 'I have an idea' : 'I have a business'}</span>
 </td></tr>
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Phone</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};"><a href="tel:+91${lead.phone}" style="color:${brandStyles.text};text-decoration:none;">+91 ${lead.phone}</a></span>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Contact Name</span><br>
+  <span style="font-size:15px;color:${brandStyles.text};">${lead.name}</span>
 </td></tr>
-${lead.email ? `<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Email</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};"><a href="mailto:${lead.email}" style="color:${brandStyles.text};text-decoration:none;">${lead.email}</a></span>
-</td></tr>` : ''}
-${lead.business_name ? `<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Business</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${lead.business_name}</span>
-</td></tr>` : ''}
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Service</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${serviceLabels[lead.service] || lead.service}</span>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Phone</span><br>
+  <span style="font-size:15px;color:${brandStyles.text};"><a href="tel:+91${lead.phone}" style="color:${brandStyles.text};text-decoration:none;">+91 ${lead.phone}</a></span>
 </td></tr>
-${lead.budget_range ? `<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Budget</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${budgetLabels[lead.budget_range] || lead.budget_range}</span>
+${lead.email ? `<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Email</span><br>
+  <span style="font-size:15px;color:${brandStyles.text};"><a href="mailto:${lead.email}" style="color:${brandStyles.text};text-decoration:none;">${lead.email}</a></span>
 </td></tr>` : ''}
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Source</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${sourceLabels[lead.source] || lead.source}</span>
+
+${isIdea ? `
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Idea Summary</span><br>
+  <span style="font-size:14px;color:${brandStyles.textMuted};line-height:1.6;">${lead.idea_summary || 'N/A'}</span>
 </td></tr>
-${lead.message ? `<tr><td style="padding:12px 0;">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Message</span><br>
-  <span style="font-size:14px;color:${brandStyles.textMuted};line-height:1.6;">${lead.message}</span>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Stage</span><br>
+  <span style="font-size:14px;color:${brandStyles.text};">${lead.idea_stage || 'N/A'}</span>
+</td></tr>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Starting Budget</span><br>
+  <span style="font-size:14px;color:${brandStyles.text};">${lead.starting_budget || 'N/A'}</span>
+</td></tr>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Requested NDA</span><br>
+  <span style="font-size:14px;color:${lead.wants_nda ? brandStyles.green : brandStyles.textMuted};font-weight:600;">${lead.wants_nda ? 'YES — Requested NDA' : 'No'}</span>
+</td></tr>
+` : `
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Business Name</span><br>
+  <span style="font-size:15px;color:${brandStyles.text};">${lead.business_name || 'N/A'} (${lead.city || 'Delhi'})</span>
+</td></tr>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">What They Sell</span><br>
+  <span style="font-size:14px;color:${brandStyles.textMuted};line-height:1.6;">${lead.message || 'N/A'}</span>
+</td></tr>
+${lead.link_url ? `<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Website / Social Link</span><br>
+  <span style="font-size:14px;color:${brandStyles.text};"><a href="${lead.link_url}" target="_blank" style="color:${brandStyles.green};text-decoration:underline;">${lead.link_url}</a></span>
 </td></tr>` : ''}
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Growth Challenge</span><br>
+  <span style="font-size:14px;color:${brandStyles.text};">${lead.challenge || 'N/A'}</span>
+</td></tr>
+<tr><td style="padding:10px 0;border-bottom:1px solid ${brandStyles.border};">
+  <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Monthly Marketing Budget</span><br>
+  <span style="font-size:14px;color:${brandStyles.text};">${lead.budget_range || 'N/A'}</span>
+</td></tr>
+`}
 </table>
 <table role="presentation" cellpadding="0" cellspacing="0">
 <tr>
-<td style="padding-right:12px;"><a href="tel:+91${lead.phone}" style="display:inline-block;padding:12px 24px;background-color:${brandStyles.green};color:#04110A;font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;">Call Now</a></td>
+<td style="padding-right:12px;"><a href="tel:+91${lead.phone}" style="display:inline-block;padding:12px 24px;background-color:${brandStyles.green};color:#04110A;font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;">Call Lead</a></td>
 <td><a href="https://wa.me/91${lead.phone}" style="display:inline-block;padding:12px 24px;background-color:transparent;color:${brandStyles.text};font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;border:1px solid ${brandStyles.border};">WhatsApp</a></td>
 </tr>
 </table>`;
 
   return {
-    subject: `New lead: ${lead.name} — ${serviceLabels[lead.service] || lead.service}`,
-    html: emailLayout('New Lead', content),
+    subject: `New inquiry [${tag}]: ${identifier} — Growth Bridge Accelerator`,
+    html: emailLayout(`New ${tag} Inquiry`, content),
   };
 }
 
 export function leadAutoReply(name: string): { subject: string; html: string } {
   const content = `
-<h1 style="margin:0 0 16px;font-size:24px;font-weight:600;color:${brandStyles.text};">Thank you, ${name}!</h1>
-<p style="margin:0 0 16px;font-size:16px;color:${brandStyles.textMuted};line-height:1.65;">
-We have received your enquiry and a member of our team will get back to you within one business day.
+<h1 style="margin:0 0 16px;font-size:22px;font-weight:600;color:${brandStyles.text};">Thank you, ${name}!</h1>
+<p style="margin:0 0 16px;font-size:15px;color:${brandStyles.textMuted};line-height:1.65;">
+We received your inquiry. A member of our team will review your details and reach out within ${FIRST_REPLY_TIME}.
 </p>
-<p style="margin:0 0 24px;font-size:16px;color:${brandStyles.textMuted};line-height:1.65;">
-If you need immediate assistance, feel free to call or WhatsApp us at <a href="tel:+918883838363" style="color:${brandStyles.green};text-decoration:none;">${BUSINESS_INFO.phoneFormatted}</a>.
-</p>
-<table role="presentation" cellpadding="0" cellspacing="0">
-<tr>
-<td style="padding-right:12px;"><a href="https://wa.me/918883838363" style="display:inline-block;padding:12px 24px;background-color:${brandStyles.green};color:#04110A;font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;">WhatsApp Us</a></td>
-</tr>
-</table>`;
-
-  return {
-    subject: `We received your enquiry — Growth Bridge Accelerator`,
-    html: emailLayout('Thank You', content),
-  };
-}
-
-export function bookingConfirmationAdmin(booking: {
-  name: string;
-  phone: string;
-  email: string;
-  date: string;
-  time: string;
-  mode: string;
-  service: string;
-}): { subject: string; html: string } {
-  const modeLabels: Record<string, string> = {
-    phone: 'Phone Call',
-    google_meet: 'Google Meet',
-    office_visit: 'Office Visit',
-  };
-
-  const content = `
-<h1 style="margin:0 0 24px;font-size:24px;font-weight:600;color:${brandStyles.text};">New Consultation Booked</h1>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Client</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${booking.name}</span>
-</td></tr>
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Date & Time</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${booking.date} at ${booking.time} IST</span>
-</td></tr>
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Mode</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};">${modeLabels[booking.mode] || booking.mode}</span>
-</td></tr>
-<tr><td style="padding:12px 0;border-bottom:1px solid ${brandStyles.border};">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Phone</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};"><a href="tel:+91${booking.phone}" style="color:${brandStyles.text};text-decoration:none;">+91 ${booking.phone}</a></span>
-</td></tr>
-<tr><td style="padding:12px 0;">
-  <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Email</span><br>
-  <span style="font-size:16px;color:${brandStyles.text};"><a href="mailto:${booking.email}" style="color:${brandStyles.text};text-decoration:none;">${booking.email}</a></span>
-</td></tr>
-</table>
-<table role="presentation" cellpadding="0" cellspacing="0">
-<tr>
-<td style="padding-right:12px;"><a href="tel:+91${booking.phone}" style="display:inline-block;padding:12px 24px;background-color:${brandStyles.green};color:#04110A;font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;">Call</a></td>
-<td><a href="https://wa.me/91${booking.phone}" style="display:inline-block;padding:12px 24px;background-color:transparent;color:${brandStyles.text};font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;border:1px solid ${brandStyles.border};">WhatsApp</a></td>
-</tr>
-</table>`;
-
-  return {
-    subject: `Consultation booked: ${booking.name} — ${booking.date} at ${booking.time}`,
-    html: emailLayout('Consultation Booked', content),
-  };
-}
-
-export function bookingConfirmationClient(booking: {
-  name: string;
-  date: string;
-  time: string;
-  mode: string;
-  confirmUrl: string;
-}): { subject: string; html: string } {
-  const modeLabels: Record<string, string> = {
-    phone: 'Phone Call',
-    google_meet: 'Google Meet',
-    office_visit: 'Office Visit',
-  };
-
-  const content = `
-<h1 style="margin:0 0 16px;font-size:24px;font-weight:600;color:${brandStyles.text};">Your consultation is booked!</h1>
-<p style="margin:0 0 24px;font-size:16px;color:${brandStyles.textMuted};line-height:1.65;">
-Hi ${booking.name}, your free consultation with Growth Bridge Accelerator has been confirmed.
-</p>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;background-color:${brandStyles.bg};border-radius:8px;padding:4px;">
-<tr><td style="padding:20px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-  <tr><td style="padding-bottom:12px;">
-    <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Date</span><br>
-    <span style="font-size:18px;font-weight:600;color:${brandStyles.text};">${booking.date}</span>
-  </td></tr>
-  <tr><td style="padding-bottom:12px;">
-    <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Time</span><br>
-    <span style="font-size:18px;font-weight:600;color:${brandStyles.text};">${booking.time} IST</span>
-  </td></tr>
-  <tr><td>
-    <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:${brandStyles.green};">Mode</span><br>
-    <span style="font-size:18px;font-weight:600;color:${brandStyles.text};">${modeLabels[booking.mode] || booking.mode}</span>
-  </td></tr>
-  </table>
-</td></tr>
-</table>
 <p style="margin:0 0 24px;font-size:14px;color:${brandStyles.textMuted};line-height:1.65;">
-If you need to reschedule, call or WhatsApp us at <a href="tel:+918883838363" style="color:${brandStyles.green};text-decoration:none;">${BUSINESS_INFO.phoneFormatted}</a>.
+If you would like to discuss right away, feel free to WhatsApp us directly at <a href="tel:+918883838363" style="color:${brandStyles.green};text-decoration:none;">${BUSINESS_INFO.phoneFormatted}</a>.
 </p>
 <table role="presentation" cellpadding="0" cellspacing="0">
 <tr>
-<td><a href="${booking.confirmUrl}" style="display:inline-block;padding:12px 24px;background-color:${brandStyles.green};color:#04110A;font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;">View Confirmation</a></td>
+<td style="padding-right:12px;"><a href="https://wa.me/918883838363" style="display:inline-block;padding:12px 24px;background-color:${brandStyles.green};color:#04110A;font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;">Message on WhatsApp</a></td>
 </tr>
 </table>`;
 
   return {
-    subject: `Your consultation is confirmed — ${booking.date} at ${booking.time}`,
-    html: emailLayout('Consultation Confirmed', content),
+    subject: `We received your inquiry — Growth Bridge Accelerator`,
+    html: emailLayout('Inquiry Received', content),
   };
 }
