@@ -144,46 +144,62 @@ export default async function HomePage() {
       {/* =========================================================================
           SECTION 2: HERO
           ========================================================================= */}
-      <section className="relative min-h-[90vh] flex items-center justify-center pt-8 pb-20 overflow-hidden">
-        {/* Background Grid & Noise */}
+      <section className="relative min-h-0 lg:min-h-[calc(100vh-72px)] flex flex-col justify-center pt-3 pb-10 sm:pt-6 sm:pb-14 lg:py-16 overflow-hidden">
+        {/* Background Grid and Noise */}
         <div className="absolute inset-0 bg-grid pointer-events-none" />
         <div className="absolute inset-0 bg-noise pointer-events-none" />
 
-        {/* Floating Orbs */}
+        {/* Ambient Hero Central Glow (Monevi style) */}
         <div
-          className="orb orb-green top-10 left-10 w-[450px] h-[450px] pointer-events-none"
+          className="absolute top-12 left-1/2 -translate-x-1/2 w-[340px] sm:w-[500px] lg:w-[650px] h-[340px] sm:h-[500px] lg:h-[650px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(25,242,140,0.18)_0%,rgba(61,214,245,0.08)_45%,transparent_70%)] blur-3xl pointer-events-none -z-0"
+          aria-hidden="true"
+        />
+
+        {/* Floating Orbs (Desktop) */}
+        <div
+          className="orb orb-green top-10 left-10 w-[450px] h-[450px] pointer-events-none hidden lg:block"
           aria-hidden="true"
         />
         <div
-          className="orb orb-violet bottom-10 right-10 w-[450px] h-[450px] pointer-events-none"
+          className="orb orb-violet bottom-10 right-10 w-[450px] h-[450px] pointer-events-none hidden lg:block"
           aria-hidden="true"
         />
 
         <Container className="relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[46%_54%] gap-8 xl:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-[46%_54%] gap-5 sm:gap-6 lg:gap-8 xl:gap-12 items-center">
             {/* Left Column: Copy & Actions */}
-            <div className="w-full max-w-[620px] space-y-6">
+            <div className="w-full max-w-[620px] space-y-3.5 sm:space-y-4 lg:space-y-6">
               <Eyebrow pill>Strategy · Websites · CRM · Marketing</Eyebrow>
 
-              <h1 className="font-display font-semibold text-[clamp(2.35rem,1.5rem+2.2vw,3.75rem)] leading-[1.08] tracking-[-0.035em] text-text max-w-[560px]">
+              <h1 className="font-display font-semibold text-[clamp(1.95rem,1.4rem+2vw,3.75rem)] leading-[1.1] sm:leading-[1.08] tracking-[-0.035em] text-text max-w-[560px]">
                 Have an idea or a business?{' '}
                 We help it <span className="font-serif italic font-normal gradient-text">grow.</span>
               </h1>
 
-              <p className="text-body text-text-muted text-base sm:text-lg max-w-[530px] leading-relaxed">
+              <p className="text-body text-text-muted text-[14.5px] sm:text-base lg:text-lg max-w-[530px] leading-relaxed">
                 Growth Bridge Accelerator helps Indian businesses plan smarter, get online, manage every customer, and grow faster.
               </p>
 
-              <div className="pt-2 flex flex-col min-[480px]:flex-row items-stretch min-[480px]:items-center gap-3 min-[480px]:gap-4 w-full min-[480px]:w-auto [&>*]:w-full min-[480px]:[&>*]:w-auto">
-                <Button href="/book-consultation" size="lg" showArrow>
+              <div className="pt-1 sm:pt-2 flex flex-row items-center gap-2.5 sm:gap-4 w-full sm:w-auto">
+                <Button
+                  href="/book-consultation"
+                  size="default"
+                  showArrow
+                  className="flex-1 sm:flex-none text-xs min-[360px]:text-sm sm:text-base px-3.5 sm:px-6 h-11 sm:h-12 lg:h-14 font-medium sm:font-semibold"
+                >
                   Book Free Consultation
                 </Button>
-                <Button href="/services" variant="secondary" size="lg">
+                <Button
+                  href="/services"
+                  variant="secondary"
+                  size="default"
+                  className="flex-1 sm:flex-none text-xs min-[360px]:text-sm sm:text-base px-3.5 sm:px-6 h-11 sm:h-12 lg:h-14 font-medium sm:font-semibold"
+                >
                   Explore Services
                 </Button>
               </div>
 
-              {/* Bottom Feature Micro-Cards from the graphic */}
+              {/* Bottom Feature Micro-Cards from the graphic (Desktop Only) */}
               <div className="hidden lg:grid grid-cols-3 gap-4 pt-6 border-t border-white/10 text-xs">
                 <div className="flex items-start gap-2.5">
                   <Globe className="w-4 h-4 text-cyan mt-0.5 shrink-0" />
@@ -210,7 +226,7 @@ export default async function HomePage() {
             </div>
 
             {/* Right Column: Monevi-Style Interactive Glass Dashboard */}
-            <div className="relative w-full flex items-center justify-center lg:justify-end mt-6 sm:mt-8 lg:mt-0">
+            <div className="relative w-full flex items-center justify-center lg:justify-end mt-0">
               <HeroDashboardPreview />
             </div>
           </div>

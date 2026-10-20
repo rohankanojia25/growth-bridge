@@ -4,17 +4,17 @@ import { TrendingUp, ArrowUpRight, Globe, Users, Megaphone, Zap, ShieldCheck, Wi
 
 export function HeroDashboardPreview() {
   return (
-    <div className="relative w-full max-w-[480px] sm:max-w-[540px] lg:max-w-[700px] xl:max-w-[760px] 2xl:max-w-[820px] mx-auto select-none pt-1 pb-2">
+    <div className="relative w-full max-w-[440px] sm:max-w-[540px] lg:max-w-[700px] xl:max-w-[760px] 2xl:max-w-[820px] mx-auto select-none pt-0 pb-1">
       {/* ─── Ambient Emerald / Cyan Glow (Monevi style) ─── */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(25,242,140,0.18)_0%,rgba(61,214,245,0.08)_42%,transparent_72%)] blur-3xl pointer-events-none -z-10"
+        className="absolute -top-12 sm:-top-16 left-1/2 -translate-x-1/2 w-[115%] h-[115%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(25,242,140,0.22)_0%,rgba(61,214,245,0.09)_42%,transparent_72%)] blur-3xl pointer-events-none -z-10"
         aria-hidden="true"
       />
 
       {/* ─── Floating Top Card: Welcome & Mobile App Overview ─── */}
-      <div className="relative z-10 ml-auto w-[92%] sm:w-[86%] rounded-2xl bg-[#090F11]/90 backdrop-blur-2xl border border-white/[0.09] p-3.5 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-all duration-300 hover:border-white/20">
+      <div className="relative z-10 ml-auto w-[92%] sm:w-[86%] rounded-2xl bg-[#090F11]/90 backdrop-blur-2xl border border-white/[0.09] p-3 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-all duration-300 hover:border-white/20">
         {/* iOS-Style Status Bar Header */}
-        <div className="flex items-center justify-between pb-2.5 text-[11px] text-white/50 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between pb-2 text-[11px] text-white/50 border-b border-white/[0.06]">
           <span className="font-mono font-medium tracking-tight text-white/70">9:41</span>
           <div className="flex items-center gap-1.5">
             <Wifi className="w-3.5 h-3.5 text-white/60" />
@@ -23,7 +23,7 @@ export function HeroDashboardPreview() {
         </div>
 
         {/* Welcome & User Greeting */}
-        <div className="pt-2.5 pb-2.5 flex items-center justify-between">
+        <div className="pt-2 pb-2 flex items-center justify-between">
           <div>
             <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-green font-mono font-medium">Growth Bridge Platform</div>
             <h3 className="text-sm sm:text-lg font-semibold text-white tracking-tight">Welcome</h3>
@@ -55,9 +55,9 @@ export function HeroDashboardPreview() {
       </div>
 
       {/* ─── Main Front Card: Real-Time Growth Analytics & Vector Spline Chart ─── */}
-      <div className="relative z-20 -mt-8 sm:-mt-12 mr-auto w-[98%] sm:w-[92%] rounded-2xl bg-[#070D0F]/95 backdrop-blur-2xl border border-white/[0.12] p-4 sm:p-6 shadow-[0_30px_70px_rgba(0,0,0,0.9)] transition-all duration-300 hover:border-green/30 overflow-hidden">
+      <div className="relative z-20 -mt-7 sm:-mt-12 mr-auto w-[98%] sm:w-[92%] rounded-2xl bg-[#070D0F]/95 backdrop-blur-2xl border border-white/[0.12] p-3.5 sm:p-6 shadow-[0_30px_70px_rgba(0,0,0,0.9)] transition-all duration-300 hover:border-green/30 overflow-hidden">
         {/* Card Header: Main KPI Balance & Action Badges */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 sm:pb-4 border-b border-white/[0.06]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 sm:pb-4 border-b border-white/[0.06]">
           <div>
             <div className="text-[11px] sm:text-xs text-text-muted font-medium">Active Business Revenue</div>
             <div className="flex items-baseline gap-2 mt-0.5 sm:mt-1">
@@ -78,7 +78,7 @@ export function HeroDashboardPreview() {
         </div>
 
         {/* Vector Area Spline Chart with Glowing Emerald/Cyan Gradient */}
-        <div className="relative pt-3 sm:pt-4 pb-1 sm:pb-2">
+        <div className="relative pt-2.5 sm:pt-4 pb-1 sm:pb-2">
           <svg
             viewBox="0 0 460 140"
             className="w-full h-auto overflow-visible"
@@ -130,7 +130,7 @@ export function HeroDashboardPreview() {
           </svg>
 
           {/* Time Marker Labels (Monevi style) */}
-          <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-text-dim font-mono pt-1.5 sm:pt-2">
+          <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-text-dim font-mono pt-1 sm:pt-2">
             <span>10:00</span>
             <span>12:00</span>
             <span>14:00</span>
@@ -194,44 +194,44 @@ export function HeroDashboardPreview() {
         </div>
 
         {/* ─── Mobile Service Highlights Overlay: 3-column horizontal row directly overlaid on the lower graphic ─── */}
-        <div className="lg:hidden relative mt-1 pt-3 pb-1 border-t border-white/[0.08] bg-gradient-to-t from-[#070D0F] via-[#070D0F]/90 to-transparent">
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5 text-center">
+        <div className="lg:hidden relative mt-2 pt-2.5 pb-1 border-t border-white/[0.08] bg-gradient-to-t from-[#070D0F] via-[#070D0F]/90 to-transparent">
+          <div className="grid grid-cols-3 gap-1 sm:gap-2 text-center">
             {/* Highlight 1 */}
-            <div className="flex flex-col items-center px-1">
-              <div className="w-6 h-6 rounded-lg bg-cyan/15 border border-cyan/30 flex items-center justify-center text-cyan mb-1 shrink-0">
-                <Globe className="w-3.5 h-3.5" />
+            <div className="flex flex-col items-center px-0.5">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-cyan/15 border border-cyan/30 flex items-center justify-center text-cyan mb-1 shrink-0">
+                <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
-              <div className="font-semibold text-text text-[10.5px] sm:text-xs leading-tight">
+              <div className="font-semibold text-text text-[10px] sm:text-xs leading-tight">
                 Modern Websites
               </div>
-              <div className="text-text-dim text-[9px] sm:text-[10px] leading-tight mt-0.5">
-                Fast. Mobile. SEO Ready.
+              <div className="text-text-dim text-[8.5px] sm:text-[10px] leading-tight mt-0.5">
+                Fast · SEO Ready
               </div>
             </div>
 
             {/* Highlight 2 */}
-            <div className="flex flex-col items-center px-1">
-              <div className="w-6 h-6 rounded-lg bg-green/15 border border-green/30 flex items-center justify-center text-green mb-1 shrink-0">
-                <Users className="w-3.5 h-3.5" />
+            <div className="flex flex-col items-center px-0.5">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-green/15 border border-green/30 flex items-center justify-center text-green mb-1 shrink-0">
+                <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
-              <div className="font-semibold text-text text-[10.5px] sm:text-xs leading-tight">
+              <div className="font-semibold text-text text-[10px] sm:text-xs leading-tight">
                 CRM Systems
               </div>
-              <div className="text-text-dim text-[9px] sm:text-[10px] leading-tight mt-0.5">
-                Keep Your Customers.
+              <div className="text-text-dim text-[8.5px] sm:text-[10px] leading-tight mt-0.5">
+                Keep Customers
               </div>
             </div>
 
             {/* Highlight 3 */}
-            <div className="flex flex-col items-center px-1">
-              <div className="w-6 h-6 rounded-lg bg-green/15 border border-green/30 flex items-center justify-center text-green mb-1 shrink-0">
-                <Megaphone className="w-3.5 h-3.5" />
+            <div className="flex flex-col items-center px-0.5">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-violet/15 border border-violet/30 flex items-center justify-center text-violet mb-1 shrink-0">
+                <Megaphone className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
-              <div className="font-semibold text-text text-[10.5px] sm:text-xs leading-tight">
+              <div className="font-semibold text-text text-[10px] sm:text-xs leading-tight">
                 Full Stack Marketing
               </div>
-              <div className="text-text-dim text-[9px] sm:text-[10px] leading-tight mt-0.5">
-                Strategy to Sales.
+              <div className="text-text-dim text-[8.5px] sm:text-[10px] leading-tight mt-0.5">
+                Strategy to Sales
               </div>
             </div>
           </div>
@@ -243,6 +243,9 @@ export function HeroDashboardPreview() {
         <Zap className="w-3.5 h-3.5 text-green" />
         <span className="font-medium">Business Growth +24%</span>
       </div>
+
+      {/* ─── Soft Bottom Edge Blend into Hero Background ─── */}
+      <div className="absolute -bottom-3 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-bg pointer-events-none" />
     </div>
   );
 }
