@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '@/components/ui/container';
 import { Section } from '@/components/ui/section';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -8,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Marquee } from '@/components/ui/marquee';
 import { FAQAccordion } from '@/components/ui/faq-accordion';
 import { SiteImage } from '@/components/ui/site-image';
-import { HeroAbstractCard } from '@/components/sections/hero-abstract-card';
+
 import { GrowthSystemDiagram } from '@/components/sections/growth-system-diagram';
 import { ProcessTimeline } from '@/components/sections/process-timeline';
 import { HomeQuickForm } from '@/components/forms/home-quick-form';
@@ -156,10 +157,10 @@ export default async function HomePage() {
           aria-hidden="true"
         />
 
-        <Container className="relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <Container className="relative z-10 max-w-[1360px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
             {/* Left Column: Copy & Actions */}
-            <div className="lg:col-span-7 space-y-6">
+            <div className="lg:col-span-6 xl:col-span-5 space-y-6">
               <Eyebrow pill>Strategy · Websites · CRM · Marketing</Eyebrow>
 
               <h1 className="text-display">
@@ -167,7 +168,7 @@ export default async function HomePage() {
                 <span className="gradient-text">We help it grow.</span>
               </h1>
 
-              <p className="text-body text-text-muted text-lg sm:text-xl max-w-2xl leading-relaxed">
+              <p className="text-body text-text-muted text-lg sm:text-xl max-w-xl leading-relaxed">
                 Growth Bridge Accelerator helps Indian businesses plan smarter, get online, manage every customer, and grow faster.
               </p>
 
@@ -180,26 +181,49 @@ export default async function HomePage() {
                 </Button>
               </div>
 
-              <p className="text-xs font-mono text-text-dim flex items-center gap-2 pt-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-green" />
-                Based in Delhi. Serving businesses across India.
-              </p>
-            </div>
-
-            {/* Right Column: Hero Visual Frame */}
-            <div className="lg:col-span-5 max-w-md mx-auto lg:max-w-none w-full">
-              <div className="relative">
-                {/* Glow behind frame */}
-                <div
-                  className="absolute -inset-1 rounded-[24px] bg-green/20 opacity-50 blur-xl pointer-events-none"
-                  aria-hidden="true"
-                />
-                <div className="relative glass border-gradient rounded-[24px] p-2 sm:p-3 overflow-hidden shadow-2xl">
-                  {/* Slot hero-visual with designed CSS abstract fallback */}
-                  <div className="relative rounded-[18px] overflow-hidden bg-bg">
-                    <HeroAbstractCard />
+              {/* Bottom Feature Micro-Cards from the graphic */}
+              <div className="pt-6 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                <div className="flex items-start gap-2.5">
+                  <Globe className="w-4 h-4 text-cyan mt-0.5 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-text">Modern Websites</div>
+                    <div className="text-text-dim text-[11px]">Fast. Mobile. SEO Ready.</div>
                   </div>
                 </div>
+                <div className="flex items-start gap-2.5">
+                  <Users className="w-4 h-4 text-green mt-0.5 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-text">CRM Systems</div>
+                    <div className="text-text-dim text-[11px]">Keep Your Customers.</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <Megaphone className="w-4 h-4 text-green mt-0.5 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-text">Full Stack Marketing</div>
+                    <div className="text-text-dim text-[11px]">Strategy to Sales.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Hero Visual Graphic */}
+            <div className="lg:col-span-6 xl:col-span-7 relative w-full flex items-center justify-center lg:justify-end">
+              <div className="relative w-full max-w-[640px] lg:max-w-none lg:w-[110%] lg:-mr-6 xl:-mr-10">
+                {/* Ambient glow matching the neon visual */}
+                <div
+                  className="absolute -inset-6 rounded-full bg-green/15 opacity-40 blur-3xl pointer-events-none"
+                  aria-hidden="true"
+                />
+                <Image
+                  src="/images/hero-visual.png"
+                  alt="Growth Bridge Accelerator Connected Growth Platform"
+                  width={562}
+                  height={461}
+                  priority
+                  className="relative z-10 w-full h-auto object-contain drop-shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
+                  sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 760px"
+                />
               </div>
             </div>
           </div>
