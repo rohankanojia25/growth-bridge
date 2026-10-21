@@ -1,14 +1,12 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Container } from '@/components/ui/container';
 import { Section } from '@/components/ui/section';
-import { SectionHeader } from '@/components/ui/section-header';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SiteImage } from '@/components/ui/site-image';
 import { BUSINESS_INFO } from '@/lib/utils';
-import { MapPin, Target, Shield, Zap, Sparkles } from 'lucide-react';
+import { MapPin, Target, Shield, Zap } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'About Us | Growth Bridge Accelerator Delhi',
@@ -161,7 +159,7 @@ export default function AboutPage() {
                 <Button href="/book-consultation" showArrow>
                   Book Discovery Meeting
                 </Button>
-                <Button href="/contact" variant="secondary">
+                <Button href="/book-consultation" variant="secondary">
                   Contact Us
                 </Button>
               </div>

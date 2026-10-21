@@ -11,16 +11,18 @@ interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'chi
   error?: string;
   options: readonly SelectOption[];
   placeholder?: string;
+  inputSize?: 'default' | 'compact';
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  function Select({ label, error, options, placeholder, className, id, ...props }, ref) {
+  function Select({ label, error, options, placeholder, className, id, inputSize = 'default', ...props }, ref) {
+    const isCompact = inputSize === 'compact';
     return (
-      <div className="space-y-1.5">
+      <div className={isCompact ? 'space-y-1' : 'space-y-1.5'}>
         {label && (
           <label
             htmlFor={id}
-            className="block text-sm font-medium font-body text-text"
+            className={cn('block font-medium font-body text-text', isCompact ? 'text-[13px]' : 'text-sm')}
           >
             {label}
           </label>
@@ -29,7 +31,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={id}
           className={cn(
-            'h-[52px] w-full rounded-xl bg-bg-raised border border-border px-4 text-text font-body text-base transition-all duration-200 appearance-none',
+            isCompact ? 'h-11 min-h-[44px]' : 'h-[52px]',
+            'w-full rounded-xl bg-bg-raised border border-border px-3.5 text-text font-body text-base transition-all duration-200 appearance-none',
             'focus:outline-none focus:border-green focus:ring-[3px] focus:ring-green/25',
             'bg-[url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236B7285%22%20stroke-width%3D%222%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E")] bg-[length:16px] bg-[right_16px_center] bg-no-repeat',
             error && 'border-danger focus:border-danger focus:ring-danger/25',

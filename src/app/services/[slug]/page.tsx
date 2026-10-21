@@ -169,7 +169,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
                 <Button href={`/book-consultation?service=${service.key}`} showArrow>
                   Book Free Consultation
                 </Button>
-                <Button href="/contact" variant="secondary">
+                <Button href={`/book-consultation?service=${service.key}`} variant="secondary">
                   Send an Enquiry
                 </Button>
               </div>

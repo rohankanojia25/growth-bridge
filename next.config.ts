@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
       { source: '/articles', destination: '/blog', permanent: true },
       { source: '/insights', destination: '/blog', permanent: true },
       { source: '/contact-us', destination: '/contact', permanent: true },
-      { source: '/enquiry', destination: '/contact', permanent: true },
+      { source: '/enquiry', destination: '/book-consultation', permanent: true },
       { source: '/book', destination: '/book-consultation', permanent: true },
       { source: '/consultation', destination: '/book-consultation', permanent: true },
       { source: '/free-consultation', destination: '/book-consultation', permanent: true },

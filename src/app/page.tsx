@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Container } from '@/components/ui/container';
@@ -13,7 +14,7 @@ import { HeroDashboardPreview } from '@/components/hero/hero-dashboard-preview';
 
 import { GrowthSystemDiagram } from '@/components/sections/growth-system-diagram';
 import { ProcessTimeline } from '@/components/sections/process-timeline';
-import { HomeQuickForm } from '@/components/forms/home-quick-form';
+import { BookingFlow } from '@/components/forms/booking-flow';
 import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { BUSINESS_INFO, SERVICES } from '@/lib/utils';
 import {
@@ -714,7 +715,7 @@ export default async function HomePage() {
                 Clear answers regarding our services, working model, and how we accelerate Indian businesses.
               </p>
               <div className="pt-4">
-                <Button href="/contact" variant="secondary" size="sm">
+                <Button href="/book-consultation" variant="secondary" size="sm">
                   Still Have Questions? Contact Us
                 </Button>
               </div>
@@ -728,11 +729,11 @@ export default async function HomePage() {
       </Section>
 
       {/* =========================================================================
-          SECTION 13: FINAL CTA (Border-gradient panel over noise + inline lead form)
+          SECTION 13: FINAL CTA (Border-gradient panel over noise + compact booking flow)
           ========================================================================= */}
       <Section id="final-cta" className="pb-28">
         <Container>
-          <div className="relative rounded-[28px] border-gradient bg-surface p-8 sm:p-14 overflow-hidden shadow-2xl">
+          <div className="relative rounded-[28px] border-gradient bg-surface p-5 sm:p-8 lg:p-10 xl:p-12 overflow-hidden shadow-2xl">
             {/* Background noise and glow */}
             <div className="absolute inset-0 bg-noise opacity-50 pointer-events-none" />
             <div
@@ -740,41 +741,74 @@ export default async function HomePage() {
               aria-hidden="true"
             />
 
-            <div className="relative z-10 max-w-2xl space-y-6">
-              <Eyebrow pill>Start Growing Today</Eyebrow>
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-center">
+              {/* Left Column (Desktop) / Top Section (Mobile): Copy + Desktop Buttons */}
+              <div className="lg:col-span-6 xl:col-span-7 space-y-6">
+                <Eyebrow pill>Start Growing Today</Eyebrow>
 
-              <h2 className="text-h2">
-                Ready to build your <span className="gradient-text">growth bridge?</span>
-              </h2>
+                <h2 className="text-h2">
+                  Ready to build your <span className="gradient-text">growth bridge?</span>
+                </h2>
 
-              <p className="text-body text-text-muted text-base sm:text-lg leading-relaxed">
-                Stop juggling multiple disconnected vendors. Tell us your goals and we will prepare a clear, connected growth blueprint for your business.
-              </p>
+                <p className="text-body text-text-muted text-base sm:text-lg leading-relaxed">
+                  Stop juggling multiple disconnected vendors. Tell us your goals and we will prepare a clear, connected growth blueprint for your business.
+                </p>
 
-              {/* Inline Quick Form */}
-              <div className="pt-2">
-                <HomeQuickForm />
+                {/* Desktop Call & WhatsApp buttons (hidden below 1024) */}
+                <div className="hidden lg:grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 pt-2 w-full">
+                  <a
+                    href={`tel:${BUSINESS_INFO.phone}`}
+                    className="inline-flex items-center justify-center gap-2 min-h-[48px] h-12 w-full px-5 rounded-full border border-border-strong bg-transparent text-text hover:bg-white/[0.06] font-semibold text-sm sm:text-base font-body active:scale-[0.98] transition-all"
+                  >
+                    <Phone className="w-4 h-4 text-green shrink-0" />
+                    <span>Call {BUSINESS_INFO.phoneFormatted}</span>
+                  </a>
+
+                  <a
+                    href={BUSINESS_INFO.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 min-h-[48px] h-12 w-full px-5 rounded-full border border-green/40 bg-green/10 text-green hover:bg-green/20 font-semibold text-sm sm:text-base font-body active:scale-[0.98] transition-all"
+                  >
+                    <MessageCircle className="w-4 h-4 text-green shrink-0" />
+                    <span>Direct WhatsApp Chat</span>
+                  </a>
+                </div>
               </div>
 
-              {/* Direct Phone & WhatsApp buttons (16px below submit button) */}
-              <div className="mt-4 grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 w-full">
-                <a
-                  href={`tel:${BUSINESS_INFO.phone}`}
-                  className="inline-flex items-center justify-center gap-2 min-h-[52px] h-[52px] w-full px-6 rounded-full border border-border-strong bg-transparent text-text hover:bg-white/[0.06] font-semibold text-base font-body active:scale-[0.98] transition-all"
+              {/* Right Column (Desktop) / Middle Section (Mobile): Compact Booking Flow */}
+              <div className="lg:col-span-6 xl:col-span-5 w-full max-w-[520px] mx-auto lg:ml-auto">
+                <Suspense
+                  fallback={
+                    <div className="w-full glass rounded-2xl p-8 text-center min-h-[280px] flex flex-col items-center justify-center">
+                      <div className="inline-block w-6 h-6 border-2 border-green border-t-transparent rounded-full animate-spin mb-2" />
+                      <p className="text-xs text-text-muted">Loading calendar availability...</p>
+                    </div>
+                  }
                 >
-                  <Phone className="w-4 h-4 text-green shrink-0" />
-                  <span>Call {BUSINESS_INFO.phoneFormatted}</span>
-                </a>
+                  <BookingFlow size="compact" />
+                </Suspense>
 
-                <a
-                  href={BUSINESS_INFO.whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 min-h-[52px] h-[52px] w-full px-6 rounded-full border border-green/40 bg-green/10 text-green hover:bg-green/20 font-semibold text-base font-body active:scale-[0.98] transition-all"
-                >
-                  <MessageCircle className="w-4 h-4 text-green shrink-0" />
-                  <span>Direct WhatsApp Chat</span>
-                </a>
+                {/* Mobile Call & WhatsApp buttons (visible below 1024, rendered directly after form) */}
+                <div className="lg:hidden mt-6 grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 w-full">
+                  <a
+                    href={`tel:${BUSINESS_INFO.phone}`}
+                    className="inline-flex items-center justify-center gap-2 min-h-[48px] h-12 w-full px-5 rounded-full border border-border-strong bg-transparent text-text hover:bg-white/[0.06] font-semibold text-sm sm:text-base font-body active:scale-[0.98] transition-all"
+                  >
+                    <Phone className="w-4 h-4 text-green shrink-0" />
+                    <span>Call {BUSINESS_INFO.phoneFormatted}</span>
+                  </a>
+
+                  <a
+                    href={BUSINESS_INFO.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 min-h-[48px] h-12 w-full px-5 rounded-full border border-green/40 bg-green/10 text-green hover:bg-green/20 font-semibold text-sm sm:text-base font-body active:scale-[0.98] transition-all"
+                  >
+                    <MessageCircle className="w-4 h-4 text-green shrink-0" />
+                    <span>Direct WhatsApp Chat</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
