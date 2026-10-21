@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { SERVICES } from '@/lib/utils';
 import { createPublicSupabaseClient } from '@/lib/supabase/server';
+import { FALLBACK_CASE_STUDIES } from '@/lib/case-studies-data';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://growthbridgeaccelerator.com';
@@ -102,7 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select('slug, updated_at')
       .eq('is_published', true);
 
-    if (cases) {
+    if (cases && cases.length > 0) {
       caseStudyRoutes = (cases as Array<{ slug: string; updated_at: string }>).map((cs) => ({
         url: `${baseUrl}/case-studies/${cs.slug}`,
         lastModified: new Date(cs.updated_at),
@@ -113,6 +114,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch {
     // Database query failed during static export or build
   }
+
+  // Ensure fallback case studies are present if not returned by database
+  FALLBACK_CASE_STUDIES.filter((c) => c.is_published).forEach((fb) => {
+    const url = `${baseUrl}/case-studies/${fb.slug}`;
+    if (!caseStudyRoutes.some((r) => r.url === url)) {
+      caseStudyRoutes.push({
+        url,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.7,
+      });
+    }
+  });
 
   return [...staticRoutes, ...serviceRoutes, ...blogRoutes, ...caseStudyRoutes];
 }

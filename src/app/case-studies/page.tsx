@@ -1,14 +1,21 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '@/components/ui/container';
 import { Section } from '@/components/ui/section';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { createPublicSupabaseClient } from '@/lib/supabase/server';
+import {
+  FALLBACK_CASE_STUDIES,
+  imageFileExists,
+  type CaseStudy,
+} from '@/lib/case-studies-data';
 import { ArrowRight, TrendingUp } from 'lucide-react';
 
-export const revalidate = 600; // ISR 600s per Section 6
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: 'Case Studies & Results | Growth Bridge Accelerator',
@@ -38,25 +45,14 @@ const breadcrumbJsonLd = {
   ],
 };
 
-interface CaseStudyRecord {
-  id: string;
-  title: string;
-  slug: string;
-  client_name: string;
-  industry: string | null;
-  summary: string | null;
-  cover_image_url: string | null;
-  results: Array<{ label: string; value: string }>;
-}
-
 export default async function CaseStudiesPage() {
-  let caseStudies: CaseStudyRecord[] = [];
+  let caseStudies: CaseStudy[] = [];
 
   try {
     const supabase = createPublicSupabaseClient();
     const query = supabase
       .from('case_studies')
-      .select('id, title, slug, client_name, industry, summary, cover_image_url, results')
+      .select('id, title, slug, client_name, industry, summary, cover_image_url, results, services_used, live_url, is_published')
       .eq('is_published', true)
       .order('published_at', { ascending: false });
 
@@ -67,7 +63,18 @@ export default async function CaseStudiesPage() {
       caseStudies = result.data;
     }
   } catch {
-    // Database empty or offline — shows production empty state
+    // Database empty or offline
+  }
+
+  // Ensure fallback case studies (like nukkad-dahibhalla) are included if not yet in Supabase
+  if (caseStudies.length === 0) {
+    caseStudies = FALLBACK_CASE_STUDIES;
+  } else {
+    FALLBACK_CASE_STUDIES.forEach((fb) => {
+      if (!caseStudies.some((c) => c.slug === fb.slug)) {
+        caseStudies.unshift(fb);
+      }
+    });
   }
 
   const hasStudies = caseStudies.length > 0;
@@ -112,52 +119,54 @@ export default async function CaseStudiesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {caseStudies.map((study) => (
-                <Card key={study.id} spotlight className="flex flex-col justify-between p-6 sm:p-7 min-w-0">
-                  <div>
-                    {study.industry && (
-                      <span className="text-eyebrow text-green uppercase text-xs mb-2 block">
-                        {study.industry}
-                      </span>
-                    )}
+              {caseStudies.map((study) => {
+                const hasCover = imageFileExists(study.cover_image_url);
 
-                    <h2 className="text-h3 text-xl text-text mb-2 break-words">{study.title}</h2>
+                return (
+                  <Card key={study.id} spotlight className="flex flex-col justify-between p-6 sm:p-7 min-w-0">
+                    <div>
+                      {/* Cover image (only rendered if file exists) */}
+                      {hasCover && study.cover_image_url && (
+                        <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden mb-5 border border-border bg-surface-hover">
+                          <Image
+                            src={study.cover_image_url}
+                            alt={study.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
 
-                    <div className="text-xs text-text-dim mb-4">
-                      Client: <span className="text-text font-medium">{study.client_name}</span>
+                      {study.industry && (
+                        <span className="text-eyebrow text-green uppercase text-xs mb-2 block">
+                          {study.industry}
+                        </span>
+                      )}
+
+                      <h2 className="text-h3 text-xl text-text mb-2 break-words">{study.title}</h2>
+
+                      <div className="text-xs text-text-dim mb-4 font-mono">
+                        Client: <span className="text-text font-medium">{study.client_name}</span>
+                      </div>
+
+                      {study.summary && (
+                        <p className="text-body text-xs text-text-muted line-clamp-3 mb-6">
+                          {study.summary}
+                        </p>
+                      )}
                     </div>
 
-                    {study.summary && (
-                      <p className="text-body text-xs text-text-muted line-clamp-3 mb-6">
-                        {study.summary}
-                      </p>
-                    )}
-
-                    {Array.isArray(study.results) && study.results.length > 0 && (
-                      <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-bg border border-border mb-6">
-                        {study.results.slice(0, 2).map((res, i) => (
-                          <div key={i} className="min-w-0">
-                            <div className="font-mono font-bold text-base text-green truncate">
-                              {res.value}
-                            </div>
-                            <div className="text-[10px] text-text-dim uppercase tracking-wider truncate">
-                              {res.label}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <Link
-                    href={`/case-studies/${study.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-green hover:underline pt-4 border-t border-border group min-h-[44px]"
-                  >
-                    <span>Read Full Transformation</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Card>
-              ))}
+                    <Link
+                      href={`/case-studies/${study.slug}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-green hover:underline pt-4 border-t border-border group min-h-[44px]"
+                    >
+                      <span>Read the story</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </Container>

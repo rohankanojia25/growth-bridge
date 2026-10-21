@@ -11,6 +11,8 @@ interface CaseStudy {
   slug: string;
   client_name: string;
   industry: string;
+  live_url?: string;
+  services_used?: string;
   summary: string;
   challenge: string;
   solution: string;
@@ -27,6 +29,8 @@ export default function AdminCaseStudiesPage() {
     slug: '',
     client_name: '',
     industry: '',
+    live_url: '',
+    services_used: '',
     summary: '',
     challenge: '',
     solution: '',
@@ -100,6 +104,8 @@ export default function AdminCaseStudiesPage() {
                 slug: '',
                 client_name: '',
                 industry: '',
+                live_url: '',
+                services_used: '',
                 summary: '',
                 challenge: '',
                 solution: '',
@@ -166,9 +172,33 @@ export default function AdminCaseStudiesPage() {
               <label className="text-xs font-mono text-text-dim uppercase">Industry Sector</label>
               <input
                 type="text"
-                placeholder="e.g. Retail Showroom"
+                placeholder="e.g. Food and street food, Gurugram"
                 value={current.industry || ''}
                 onChange={(e) => setCurrent({ ...current, industry: e.target.value })}
+                className="h-10 px-3 w-full rounded-xl bg-bg border border-border text-xs text-text mt-1"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-mono text-text-dim uppercase">Live Website URL</label>
+              <input
+                type="url"
+                placeholder="https://example.com"
+                value={current.live_url || ''}
+                onChange={(e) => setCurrent({ ...current, live_url: e.target.value })}
+                className="h-10 px-3 w-full rounded-xl bg-bg border border-border text-xs text-text mt-1 font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-mono text-text-dim uppercase">Services Used (comma-separated)</label>
+              <input
+                type="text"
+                placeholder="Website, Google Business Profile, Local SEO..."
+                value={current.services_used || ''}
+                onChange={(e) => setCurrent({ ...current, services_used: e.target.value })}
                 className="h-10 px-3 w-full rounded-xl bg-bg border border-border text-xs text-text mt-1"
               />
             </div>
@@ -185,22 +215,22 @@ export default function AdminCaseStudiesPage() {
           </div>
 
           <div>
-            <label className="text-xs font-mono text-text-dim uppercase">The Challenge</label>
+            <label className="text-xs font-mono text-text-dim uppercase">The Challenge (Markdown)</label>
             <textarea
-              rows={3}
+              rows={4}
               value={current.challenge || ''}
               onChange={(e) => setCurrent({ ...current, challenge: e.target.value })}
-              className="p-3 w-full rounded-xl bg-bg border border-border text-xs text-text mt-1"
+              className="p-3 w-full rounded-xl bg-bg border border-border text-xs text-text mt-1 font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs font-mono text-text-dim uppercase">The Connected Solution</label>
+            <label className="text-xs font-mono text-text-dim uppercase">The Solution (Markdown)</label>
             <textarea
-              rows={3}
+              rows={4}
               value={current.solution || ''}
               onChange={(e) => setCurrent({ ...current, solution: e.target.value })}
-              className="p-3 w-full rounded-xl bg-bg border border-border text-xs text-text mt-1"
+              className="p-3 w-full rounded-xl bg-bg border border-border text-xs text-text mt-1 font-mono"
             />
           </div>
 
@@ -210,14 +240,14 @@ export default function AdminCaseStudiesPage() {
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Value (e.g. +310%)"
+                placeholder="Value (e.g. 5.0 stars from 48 reviews)"
                 value={resValue}
                 onChange={(e) => setResValue(e.target.value)}
-                className="h-9 px-3 w-1/3 rounded-xl bg-bg border border-border text-xs text-text font-mono"
+                className="h-9 px-3 w-1/2 rounded-xl bg-bg border border-border text-xs text-text font-mono"
               />
               <input
                 type="text"
-                placeholder="Label (e.g. WhatsApp Inquiries)"
+                placeholder="Label (e.g. Google AI Overview)"
                 value={resLabel}
                 onChange={(e) => setResLabel(e.target.value)}
                 className="h-9 px-3 flex-1 rounded-xl bg-bg border border-border text-xs text-text"
@@ -273,7 +303,7 @@ export default function AdminCaseStudiesPage() {
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y border-border">
               {studies.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-text-dim">
@@ -285,7 +315,7 @@ export default function AdminCaseStudiesPage() {
                   <tr key={st.id} className="hover:bg-white/[0.02]">
                     <td className="py-3 px-4">
                       <div className="font-semibold text-text">{st.title}</div>
-                      <div className="text-[11px] text-text-dim">{st.client_name} · /{st.slug}</div>
+                      <div className="text-[11px] text-text-dim">{st.client_name} • /{st.slug}</div>
                     </td>
                     <td className="py-3 px-4 text-text">{st.industry || '—'}</td>
                     <td className="py-3 px-4">

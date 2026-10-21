@@ -17,6 +17,7 @@ import { ProcessTimeline } from '@/components/sections/process-timeline';
 import { BookingFlow } from '@/components/forms/booking-flow';
 import { createPublicSupabaseClient } from '@/lib/supabase/server';
 import { BUSINESS_INFO, SERVICES } from '@/lib/utils';
+import { FALLBACK_CASE_STUDIES } from '@/lib/case-studies-data';
 import {
   Compass,
   Globe,
@@ -129,10 +130,14 @@ export default async function HomePage() {
 
     if (logosRes.data && logosRes.data.length >= 4) clientLogos = logosRes.data;
     if (testRes.data && testRes.data.length > 0) testimonials = testRes.data;
-    if (casesRes.data && casesRes.data.length > 0) caseStudies = casesRes.data;
+    if (casesRes.data && casesRes.data.length > 0) {
+      caseStudies = casesRes.data;
+    } else {
+      caseStudies = FALLBACK_CASE_STUDIES.slice(0, 3);
+    }
     if (blogsRes.data && blogsRes.data.length > 0) blogPosts = blogsRes.data;
   } catch {
-    // Database empty or offline — graceful fallback
+    caseStudies = FALLBACK_CASE_STUDIES.slice(0, 3);
   }
 
   return (
@@ -692,7 +697,7 @@ export default async function HomePage() {
                     href={`/case-studies/${cs.slug}`}
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-green hover:underline mt-4"
                   >
-                    <span>Read Full Case Study</span>
+                    <span>Read the story</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </Card>
